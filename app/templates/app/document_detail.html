@@ -1,0 +1,96 @@
+{% extends "app/base.html" %}
+
+{% block title %}Document Detail{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Document Details -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Document Details</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if document.message %}
+                <a href="{% url 'message_detail' document.message.id %}" class="btn btn-outline-secondary">Back to Message</a>
+            {% else %}
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Document Information -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Document Information</h5>
+                    <span class="badge {% if document.status == 'draft' %}bg-warning{% elif document.status == 'final' %}bg-success{% elif document.status == 'sent' %}bg-info{% elif document.status == 'accepted' %}bg-success{% elif document.status == 'rejected' %}bg-danger{% endif %}">
+                        {{ document.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Type:</div>
+                        <div class="col-md-8">{{ document.get_document_type_display }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Client:</div>
+                        <div class="col-md-8">{{ document.client_name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Created:</div>
+                        <div class="col-md-8">{{ document.created_at|date:"Y-m-d H:i" }}</div>
+                    </div>
+                    
+                    {% if document.file %}
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">File:</div>
+                            <div class="col-md-8">
+                                <a href="{{ document.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="bi bi-file-earmark-text"></i> View File
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Document Status Form -->
+                    <form method="post" action="{% url 'document_update' document.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                            {{ form.status }}
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Update Status</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Document Content -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Document Content</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'document_update' document.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ form.document_type.as_hidden }}
+                            <div class="mb-3">
+                                <label for="{{ form.content.id_for_label }}" class="form-label">Content</label>
+                                {{ form.content }}
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

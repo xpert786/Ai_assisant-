@@ -1,0 +1,749 @@
+[2025-08-18 14:42:28 +0000] [15110] [INFO] Starting gunicorn 23.0.0
+[2025-08-18 14:42:28 +0000] [15110] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (15110)
+[2025-08-18 14:42:28 +0000] [15110] [INFO] Using worker: sync
+[2025-08-18 14:42:28 +0000] [15111] [INFO] Booting worker with pid: 15111
+[2025-08-18 14:42:28 +0000] [15112] [INFO] Booting worker with pid: 15112
+[2025-08-18 14:42:28 +0000] [15113] [INFO] Booting worker with pid: 15113
+[2025-08-18 15:09:59 +0000] [15111] [INFO] Worker exiting (pid: 15111)
+[2025-08-18 15:09:59 +0000] [15110] [INFO] Handling signal: term
+[2025-08-18 15:09:59 +0000] [15112] [INFO] Worker exiting (pid: 15112)
+[2025-08-18 15:09:59 +0000] [15113] [INFO] Worker exiting (pid: 15113)
+[2025-08-18 15:10:00 +0000] [15110] [INFO] Shutting down: Master
+[2025-08-18 15:10:00 +0000] [15470] [INFO] Starting gunicorn 23.0.0
+[2025-08-18 15:10:00 +0000] [15470] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (15470)
+[2025-08-18 15:10:00 +0000] [15470] [INFO] Using worker: sync
+[2025-08-18 15:10:00 +0000] [15472] [INFO] Booting worker with pid: 15472
+[2025-08-18 15:10:00 +0000] [15473] [INFO] Booting worker with pid: 15473
+[2025-08-18 15:10:00 +0000] [15474] [INFO] Booting worker with pid: 15474
+[2025-08-19 11:51:52 +0000] [15470] [INFO] Handling signal: term
+[2025-08-19 11:51:52 +0000] [15474] [INFO] Worker exiting (pid: 15474)
+[2025-08-19 11:51:52 +0000] [15473] [INFO] Worker exiting (pid: 15473)
+[2025-08-19 11:51:52 +0000] [15472] [INFO] Worker exiting (pid: 15472)
+[2025-08-19 11:51:54 +0000] [15470] [INFO] Shutting down: Master
+[2025-08-19 11:51:54 +0000] [24515] [INFO] Starting gunicorn 23.0.0
+[2025-08-19 11:51:54 +0000] [24515] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (24515)
+[2025-08-19 11:51:54 +0000] [24515] [INFO] Using worker: sync
+[2025-08-19 11:51:54 +0000] [24517] [INFO] Booting worker with pid: 24517
+[2025-08-19 11:51:54 +0000] [24518] [INFO] Booting worker with pid: 24518
+[2025-08-19 11:51:54 +0000] [24519] [INFO] Booting worker with pid: 24519
+[2025-08-19 11:52:31 +0000] [24515] [INFO] Handling signal: term
+[2025-08-19 11:52:31 +0000] [24517] [INFO] Worker exiting (pid: 24517)
+[2025-08-19 11:52:31 +0000] [24519] [INFO] Worker exiting (pid: 24519)
+[2025-08-19 11:52:31 +0000] [24518] [INFO] Worker exiting (pid: 24518)
+[2025-08-19 11:52:31 +0000] [24515] [ERROR] Worker (pid:24519) was sent SIGTERM!
+[2025-08-19 11:52:31 +0000] [24515] [INFO] Shutting down: Master
+[2025-08-19 11:52:31 +0000] [24531] [INFO] Starting gunicorn 23.0.0
+[2025-08-19 11:52:31 +0000] [24531] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (24531)
+[2025-08-19 11:52:31 +0000] [24531] [INFO] Using worker: sync
+[2025-08-19 11:52:31 +0000] [24532] [INFO] Booting worker with pid: 24532
+[2025-08-19 11:52:31 +0000] [24533] [INFO] Booting worker with pid: 24533
+[2025-08-19 11:52:31 +0000] [24534] [INFO] Booting worker with pid: 24534
+[2025-08-19 12:13:38 +0000] [24531] [INFO] Handling signal: term
+[2025-08-19 12:13:38 +0000] [24533] [INFO] Worker exiting (pid: 24533)
+[2025-08-19 12:13:38 +0000] [24532] [INFO] Worker exiting (pid: 24532)
+[2025-08-19 12:13:38 +0000] [24534] [INFO] Worker exiting (pid: 24534)
+[2025-08-19 12:13:39 +0000] [24531] [INFO] Shutting down: Master
+[2025-08-19 12:13:39 +0000] [25228] [INFO] Starting gunicorn 23.0.0
+[2025-08-19 12:13:39 +0000] [25228] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (25228)
+[2025-08-19 12:13:39 +0000] [25228] [INFO] Using worker: sync
+[2025-08-19 12:13:39 +0000] [25229] [INFO] Booting worker with pid: 25229
+[2025-08-19 12:13:39 +0000] [25230] [INFO] Booting worker with pid: 25230
+[2025-08-19 12:13:39 +0000] [25231] [INFO] Booting worker with pid: 25231
+[2025-08-19 12:13:53 +0000] [25228] [INFO] Handling signal: term
+[2025-08-19 12:13:53 +0000] [25229] [INFO] Worker exiting (pid: 25229)
+[2025-08-19 12:13:53 +0000] [25230] [INFO] Worker exiting (pid: 25230)
+[2025-08-19 12:13:53 +0000] [25231] [INFO] Worker exiting (pid: 25231)
+[2025-08-19 12:13:53 +0000] [25228] [INFO] Shutting down: Master
+[2025-08-19 12:13:53 +0000] [25243] [INFO] Starting gunicorn 23.0.0
+[2025-08-19 12:13:53 +0000] [25243] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (25243)
+[2025-08-19 12:13:53 +0000] [25243] [INFO] Using worker: sync
+[2025-08-19 12:13:53 +0000] [25244] [INFO] Booting worker with pid: 25244
+[2025-08-19 12:13:53 +0000] [25245] [INFO] Booting worker with pid: 25245
+[2025-08-19 12:13:53 +0000] [25246] [INFO] Booting worker with pid: 25246
+[2025-08-19 12:16:35 +0000] [25243] [INFO] Handling signal: term
+[2025-08-19 12:16:35 +0000] [25245] [INFO] Worker exiting (pid: 25245)
+[2025-08-19 12:16:35 +0000] [25244] [INFO] Worker exiting (pid: 25244)
+[2025-08-19 12:16:35 +0000] [25246] [INFO] Worker exiting (pid: 25246)
+[2025-08-19 12:16:36 +0000] [25243] [INFO] Shutting down: Master
+[2025-08-19 12:16:36 +0000] [25360] [INFO] Starting gunicorn 23.0.0
+[2025-08-19 12:16:36 +0000] [25360] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (25360)
+[2025-08-19 12:16:36 +0000] [25360] [INFO] Using worker: sync
+[2025-08-19 12:16:36 +0000] [25362] [INFO] Booting worker with pid: 25362
+[2025-08-19 12:16:36 +0000] [25363] [INFO] Booting worker with pid: 25363
+[2025-08-19 12:16:36 +0000] [25364] [INFO] Booting worker with pid: 25364
+[2025-08-19 12:35:32 +0000] [25362] [INFO] Worker exiting (pid: 25362)
+[2025-08-19 12:35:32 +0000] [25360] [INFO] Handling signal: term
+[2025-08-19 12:35:32 +0000] [25363] [INFO] Worker exiting (pid: 25363)
+[2025-08-19 12:35:32 +0000] [25364] [INFO] Worker exiting (pid: 25364)
+[2025-08-19 12:35:33 +0000] [25360] [INFO] Shutting down: Master
+[2025-08-19 12:35:34 +0000] [25938] [INFO] Starting gunicorn 23.0.0
+[2025-08-19 12:35:34 +0000] [25938] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (25938)
+[2025-08-19 12:35:34 +0000] [25938] [INFO] Using worker: sync
+[2025-08-19 12:35:34 +0000] [25941] [INFO] Booting worker with pid: 25941
+[2025-08-19 12:35:34 +0000] [25942] [INFO] Booting worker with pid: 25942
+[2025-08-19 12:35:34 +0000] [25943] [INFO] Booting worker with pid: 25943
+[2025-08-19 12:45:04 +0000] [25938] [INFO] Handling signal: term
+[2025-08-19 12:45:04 +0000] [25941] [INFO] Worker exiting (pid: 25941)
+[2025-08-19 12:45:04 +0000] [25943] [INFO] Worker exiting (pid: 25943)
+[2025-08-19 12:45:04 +0000] [25942] [INFO] Worker exiting (pid: 25942)
+[2025-08-19 12:45:06 +0000] [25938] [INFO] Shutting down: Master
+[2025-08-19 12:45:06 +0000] [25992] [INFO] Starting gunicorn 23.0.0
+[2025-08-19 12:45:06 +0000] [25992] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (25992)
+[2025-08-19 12:45:06 +0000] [25992] [INFO] Using worker: sync
+[2025-08-19 12:45:06 +0000] [25993] [INFO] Booting worker with pid: 25993
+[2025-08-19 12:45:06 +0000] [25994] [INFO] Booting worker with pid: 25994
+[2025-08-19 12:45:06 +0000] [25995] [INFO] Booting worker with pid: 25995
+[2025-08-19 12:46:07 +0000] [25992] [INFO] Handling signal: term
+[2025-08-19 12:46:07 +0000] [25993] [INFO] Worker exiting (pid: 25993)
+[2025-08-19 12:46:07 +0000] [25994] [INFO] Worker exiting (pid: 25994)
+[2025-08-19 12:46:07 +0000] [25995] [INFO] Worker exiting (pid: 25995)
+[2025-08-19 12:46:07 +0000] [25992] [INFO] Shutting down: Master
+[2025-08-19 12:46:07 +0000] [26171] [INFO] Starting gunicorn 23.0.0
+[2025-08-19 12:46:07 +0000] [26171] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (26171)
+[2025-08-19 12:46:07 +0000] [26171] [INFO] Using worker: sync
+[2025-08-19 12:46:07 +0000] [26172] [INFO] Booting worker with pid: 26172
+[2025-08-19 12:46:07 +0000] [26173] [INFO] Booting worker with pid: 26173
+[2025-08-19 12:46:07 +0000] [26174] [INFO] Booting worker with pid: 26174
+[2025-08-19 12:48:10 +0000] [26171] [INFO] Handling signal: term
+[2025-08-19 12:48:10 +0000] [26173] [INFO] Worker exiting (pid: 26173)
+[2025-08-19 12:48:10 +0000] [26174] [INFO] Worker exiting (pid: 26174)
+[2025-08-19 12:48:10 +0000] [26172] [INFO] Worker exiting (pid: 26172)
+[2025-08-19 12:48:11 +0000] [26171] [INFO] Shutting down: Master
+[2025-08-19 12:48:11 +0000] [26209] [INFO] Starting gunicorn 23.0.0
+[2025-08-19 12:48:11 +0000] [26209] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (26209)
+[2025-08-19 12:48:11 +0000] [26209] [INFO] Using worker: sync
+[2025-08-19 12:48:11 +0000] [26210] [INFO] Booting worker with pid: 26210
+[2025-08-19 12:48:11 +0000] [26211] [INFO] Booting worker with pid: 26211
+[2025-08-19 12:48:11 +0000] [26212] [INFO] Booting worker with pid: 26212
+[2025-08-19 12:50:33 +0000] [26209] [INFO] Handling signal: term
+[2025-08-19 12:50:33 +0000] [26210] [INFO] Worker exiting (pid: 26210)
+[2025-08-19 12:50:33 +0000] [26211] [INFO] Worker exiting (pid: 26211)
+[2025-08-19 12:50:33 +0000] [26212] [INFO] Worker exiting (pid: 26212)
+[2025-08-19 12:50:33 +0000] [26209] [INFO] Shutting down: Master
+[2025-08-19 12:50:33 +0000] [26391] [INFO] Starting gunicorn 23.0.0
+[2025-08-19 12:50:33 +0000] [26391] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (26391)
+[2025-08-19 12:50:33 +0000] [26391] [INFO] Using worker: sync
+[2025-08-19 12:50:33 +0000] [26392] [INFO] Booting worker with pid: 26392
+[2025-08-19 12:50:33 +0000] [26393] [INFO] Booting worker with pid: 26393
+[2025-08-19 12:50:33 +0000] [26394] [INFO] Booting worker with pid: 26394
+[2025-08-19 12:53:29 +0000] [26391] [INFO] Handling signal: term
+[2025-08-19 12:53:29 +0000] [26392] [INFO] Worker exiting (pid: 26392)
+[2025-08-19 12:53:29 +0000] [26393] [INFO] Worker exiting (pid: 26393)
+[2025-08-19 12:53:29 +0000] [26394] [INFO] Worker exiting (pid: 26394)
+[2025-08-19 12:53:29 +0000] [26391] [INFO] Shutting down: Master
+[2025-08-19 12:53:29 +0000] [26522] [INFO] Starting gunicorn 23.0.0
+[2025-08-19 12:53:29 +0000] [26522] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (26522)
+[2025-08-19 12:53:29 +0000] [26522] [INFO] Using worker: sync
+[2025-08-19 12:53:29 +0000] [26525] [INFO] Booting worker with pid: 26525
+[2025-08-19 12:53:29 +0000] [26526] [INFO] Booting worker with pid: 26526
+[2025-08-19 12:53:29 +0000] [26527] [INFO] Booting worker with pid: 26527
+[2025-08-19 13:12:47 +0000] [26522] [INFO] Handling signal: term
+[2025-08-19 13:12:47 +0000] [26525] [INFO] Worker exiting (pid: 26525)
+[2025-08-19 13:12:47 +0000] [26526] [INFO] Worker exiting (pid: 26526)
+[2025-08-19 13:12:47 +0000] [26527] [INFO] Worker exiting (pid: 26527)
+[2025-08-19 13:12:48 +0000] [26522] [INFO] Shutting down: Master
+[2025-08-19 13:12:48 +0000] [26711] [INFO] Starting gunicorn 23.0.0
+[2025-08-19 13:12:48 +0000] [26711] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (26711)
+[2025-08-19 13:12:48 +0000] [26711] [INFO] Using worker: sync
+[2025-08-19 13:12:48 +0000] [26712] [INFO] Booting worker with pid: 26712
+[2025-08-19 13:12:48 +0000] [26713] [INFO] Booting worker with pid: 26713
+[2025-08-19 13:12:49 +0000] [26714] [INFO] Booting worker with pid: 26714
+[2025-08-20 12:54:13 +0000] [26714] [INFO] Worker exiting (pid: 26714)
+[2025-08-20 12:54:13 +0000] [26713] [INFO] Worker exiting (pid: 26713)
+[2025-08-20 12:54:13 +0000] [26712] [INFO] Worker exiting (pid: 26712)
+[2025-08-20 12:54:13 +0000] [26711] [INFO] Handling signal: term
+[2025-08-20 12:54:15 +0000] [26711] [INFO] Shutting down: Master
+[2025-08-20 12:54:15 +0000] [30967] [INFO] Starting gunicorn 23.0.0
+[2025-08-20 12:54:15 +0000] [30967] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (30967)
+[2025-08-20 12:54:15 +0000] [30967] [INFO] Using worker: sync
+[2025-08-20 12:54:15 +0000] [30969] [INFO] Booting worker with pid: 30969
+[2025-08-20 12:54:15 +0000] [30970] [INFO] Booting worker with pid: 30970
+[2025-08-20 12:54:16 +0000] [30971] [INFO] Booting worker with pid: 30971
+[2025-08-21 06:52:05 +0000] [30967] [INFO] Handling signal: term
+[2025-08-21 06:52:05 +0000] [30969] [INFO] Worker exiting (pid: 30969)
+[2025-08-21 06:52:05 +0000] [30971] [INFO] Worker exiting (pid: 30971)
+[2025-08-21 06:52:05 +0000] [30970] [INFO] Worker exiting (pid: 30970)
+[2025-08-21 06:52:07 +0000] [30967] [INFO] Shutting down: Master
+[2025-08-21 06:52:07 +0000] [33457] [INFO] Starting gunicorn 23.0.0
+[2025-08-21 06:52:07 +0000] [33457] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (33457)
+[2025-08-21 06:52:07 +0000] [33457] [INFO] Using worker: sync
+[2025-08-21 06:52:07 +0000] [33477] [INFO] Booting worker with pid: 33477
+[2025-08-21 06:52:07 +0000] [33480] [INFO] Booting worker with pid: 33480
+[2025-08-21 06:52:07 +0000] [33481] [INFO] Booting worker with pid: 33481
+[2025-08-21 11:03:00 +0000] [33457] [INFO] Handling signal: term
+[2025-08-21 11:03:00 +0000] [33480] [INFO] Worker exiting (pid: 33480)
+[2025-08-21 11:03:00 +0000] [33481] [INFO] Worker exiting (pid: 33481)
+[2025-08-21 11:03:00 +0000] [33477] [INFO] Worker exiting (pid: 33477)
+[2025-08-21 11:03:01 +0000] [33457] [INFO] Shutting down: Master
+[2025-08-21 11:03:02 +0000] [34340] [INFO] Starting gunicorn 23.0.0
+[2025-08-21 11:03:02 +0000] [34340] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (34340)
+[2025-08-21 11:03:02 +0000] [34340] [INFO] Using worker: sync
+[2025-08-21 11:03:02 +0000] [34343] [INFO] Booting worker with pid: 34343
+[2025-08-21 11:03:02 +0000] [34344] [INFO] Booting worker with pid: 34344
+[2025-08-21 11:03:02 +0000] [34345] [INFO] Booting worker with pid: 34345
+[2025-08-22 06:16:11 +0000] [34340] [INFO] Handling signal: term
+[2025-08-22 06:16:11 +0000] [34343] [INFO] Worker exiting (pid: 34343)
+[2025-08-22 06:16:11 +0000] [34344] [INFO] Worker exiting (pid: 34344)
+[2025-08-22 06:16:11 +0000] [34345] [INFO] Worker exiting (pid: 34345)
+[2025-08-22 06:16:13 +0000] [34340] [INFO] Shutting down: Master
+[2025-08-22 06:16:13 +0000] [37362] [INFO] Starting gunicorn 23.0.0
+[2025-08-22 06:16:13 +0000] [37362] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (37362)
+[2025-08-22 06:16:13 +0000] [37362] [INFO] Using worker: sync
+[2025-08-22 06:16:13 +0000] [37382] [INFO] Booting worker with pid: 37382
+[2025-08-22 06:16:13 +0000] [37384] [INFO] Booting worker with pid: 37384
+[2025-08-22 06:16:13 +0000] [37386] [INFO] Booting worker with pid: 37386
+[2025-08-28 13:32:18 +0000] [37384] [INFO] Worker exiting (pid: 37384)
+[2025-08-28 13:32:18 +0000] [37386] [INFO] Worker exiting (pid: 37386)
+[2025-08-28 13:32:18 +0000] [37382] [INFO] Worker exiting (pid: 37382)
+[2025-08-28 13:32:18 +0000] [37362] [INFO] Handling signal: term
+[2025-08-28 13:32:23 +0000] [37362] [INFO] Shutting down: Master
+[2025-08-28 13:32:24 +0000] [68335] [INFO] Starting gunicorn 23.0.0
+[2025-08-28 13:32:24 +0000] [68335] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (68335)
+[2025-08-28 13:32:24 +0000] [68335] [INFO] Using worker: sync
+[2025-08-28 13:32:24 +0000] [68336] [INFO] Booting worker with pid: 68336
+[2025-08-28 13:32:24 +0000] [68337] [INFO] Booting worker with pid: 68337
+[2025-08-28 13:32:24 +0000] [68338] [INFO] Booting worker with pid: 68338
+[2025-09-01 16:56:23 +0000] [68336] [INFO] Worker exiting (pid: 68336)
+[2025-09-01 16:56:23 +0000] [68338] [INFO] Worker exiting (pid: 68338)
+[2025-09-01 16:56:23 +0000] [68337] [INFO] Worker exiting (pid: 68337)
+[2025-09-01 16:56:23 +0000] [68335] [INFO] Handling signal: term
+[2025-09-01 16:56:30 +0000] [68335] [INFO] Shutting down: Master
+[2025-09-01 16:56:30 +0000] [88982] [INFO] Starting gunicorn 23.0.0
+[2025-09-01 16:56:30 +0000] [88982] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (88982)
+[2025-09-01 16:56:30 +0000] [88982] [INFO] Using worker: sync
+[2025-09-01 16:56:30 +0000] [88984] [INFO] Booting worker with pid: 88984
+[2025-09-01 16:56:30 +0000] [88985] [INFO] Booting worker with pid: 88985
+[2025-09-01 16:56:30 +0000] [88986] [INFO] Booting worker with pid: 88986
+[2025-09-01 16:59:38 +0000] [88982] [INFO] Handling signal: term
+[2025-09-01 16:59:38 +0000] [88985] [INFO] Worker exiting (pid: 88985)
+[2025-09-01 16:59:38 +0000] [88984] [INFO] Worker exiting (pid: 88984)
+[2025-09-01 16:59:38 +0000] [88986] [INFO] Worker exiting (pid: 88986)
+[2025-09-01 16:59:40 +0000] [88982] [INFO] Shutting down: Master
+[2025-09-01 16:59:40 +0000] [89050] [INFO] Starting gunicorn 23.0.0
+[2025-09-01 16:59:40 +0000] [89050] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (89050)
+[2025-09-01 16:59:40 +0000] [89050] [INFO] Using worker: sync
+[2025-09-01 16:59:40 +0000] [89051] [INFO] Booting worker with pid: 89051
+[2025-09-01 16:59:40 +0000] [89052] [INFO] Booting worker with pid: 89052
+[2025-09-01 16:59:40 +0000] [89053] [INFO] Booting worker with pid: 89053
+[2025-09-03 14:26:24 +0000] [89052] [INFO] Worker exiting (pid: 89052)
+[2025-09-03 14:26:24 +0000] [89053] [INFO] Worker exiting (pid: 89053)
+[2025-09-03 14:26:24 +0000] [89051] [INFO] Worker exiting (pid: 89051)
+[2025-09-03 14:26:24 +0000] [89050] [INFO] Handling signal: term
+[2025-09-03 14:26:32 +0000] [89050] [INFO] Shutting down: Master
+[2025-09-03 14:26:33 +0000] [96524] [INFO] Starting gunicorn 23.0.0
+[2025-09-03 14:26:33 +0000] [96524] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (96524)
+[2025-09-03 14:26:33 +0000] [96524] [INFO] Using worker: sync
+[2025-09-03 14:26:33 +0000] [96525] [INFO] Booting worker with pid: 96525
+[2025-09-03 14:26:33 +0000] [96526] [INFO] Booting worker with pid: 96526
+[2025-09-03 14:26:33 +0000] [96527] [INFO] Booting worker with pid: 96527
+[2025-09-03 14:34:02 +0000] [96524] [INFO] Handling signal: term
+[2025-09-03 14:34:02 +0000] [96525] [INFO] Worker exiting (pid: 96525)
+[2025-09-03 14:34:02 +0000] [96526] [INFO] Worker exiting (pid: 96526)
+[2025-09-03 14:34:02 +0000] [96527] [INFO] Worker exiting (pid: 96527)
+[2025-09-03 14:34:04 +0000] [96524] [INFO] Shutting down: Master
+[2025-09-03 14:34:04 +0000] [96766] [INFO] Starting gunicorn 23.0.0
+[2025-09-03 14:34:04 +0000] [96766] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (96766)
+[2025-09-03 14:34:04 +0000] [96766] [INFO] Using worker: sync
+[2025-09-03 14:34:04 +0000] [96768] [INFO] Booting worker with pid: 96768
+[2025-09-03 14:34:04 +0000] [96769] [INFO] Booting worker with pid: 96769
+[2025-09-03 14:34:04 +0000] [96770] [INFO] Booting worker with pid: 96770
+[2025-09-04 11:33:37 +0000] [96770] [INFO] Worker exiting (pid: 96770)
+[2025-09-04 11:33:37 +0000] [96768] [INFO] Worker exiting (pid: 96768)
+[2025-09-04 11:33:37 +0000] [96769] [INFO] Worker exiting (pid: 96769)
+[2025-09-04 11:33:37 +0000] [96766] [INFO] Handling signal: term
+[2025-09-04 11:33:46 +0000] [96766] [INFO] Shutting down: Master
+[2025-09-04 11:33:47 +0000] [99909] [INFO] Starting gunicorn 23.0.0
+[2025-09-04 11:33:47 +0000] [99909] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (99909)
+[2025-09-04 11:33:47 +0000] [99909] [INFO] Using worker: sync
+[2025-09-04 11:33:47 +0000] [99910] [INFO] Booting worker with pid: 99910
+[2025-09-04 11:33:47 +0000] [99911] [INFO] Booting worker with pid: 99911
+[2025-09-04 11:33:47 +0000] [99912] [INFO] Booting worker with pid: 99912
+[2025-09-04 11:34:22 +0000] [99910] [INFO] Worker exiting (pid: 99910)
+[2025-09-04 11:34:22 +0000] [99911] [INFO] Worker exiting (pid: 99911)
+[2025-09-04 11:34:22 +0000] [99909] [INFO] Handling signal: term
+[2025-09-04 11:34:22 +0000] [99912] [INFO] Worker exiting (pid: 99912)
+[2025-09-04 11:34:22 +0000] [99909] [ERROR] Worker (pid:99910) was sent SIGTERM!
+[2025-09-04 11:34:23 +0000] [99909] [INFO] Shutting down: Master
+[2025-09-04 11:34:24 +0000] [99935] [INFO] Starting gunicorn 23.0.0
+[2025-09-04 11:34:24 +0000] [99935] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (99935)
+[2025-09-04 11:34:24 +0000] [99935] [INFO] Using worker: sync
+[2025-09-04 11:34:24 +0000] [99937] [INFO] Booting worker with pid: 99937
+[2025-09-04 11:34:24 +0000] [99938] [INFO] Booting worker with pid: 99938
+[2025-09-04 11:34:24 +0000] [99939] [INFO] Booting worker with pid: 99939
+[2025-09-04 11:35:32 +0000] [99935] [INFO] Handling signal: term
+[2025-09-04 11:35:32 +0000] [99939] [INFO] Worker exiting (pid: 99939)
+[2025-09-04 11:35:32 +0000] [99937] [INFO] Worker exiting (pid: 99937)
+[2025-09-04 11:35:32 +0000] [99938] [INFO] Worker exiting (pid: 99938)
+[2025-09-04 11:35:33 +0000] [99935] [INFO] Shutting down: Master
+[2025-09-04 11:35:33 +0000] [100018] [INFO] Starting gunicorn 23.0.0
+[2025-09-04 11:35:33 +0000] [100018] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (100018)
+[2025-09-04 11:35:33 +0000] [100018] [INFO] Using worker: sync
+[2025-09-04 11:35:33 +0000] [100019] [INFO] Booting worker with pid: 100019
+[2025-09-04 11:35:33 +0000] [100020] [INFO] Booting worker with pid: 100020
+[2025-09-04 11:35:33 +0000] [100021] [INFO] Booting worker with pid: 100021
+[2025-09-04 11:41:09 +0000] [100018] [INFO] Handling signal: term
+[2025-09-04 11:41:09 +0000] [100020] [INFO] Worker exiting (pid: 100020)
+[2025-09-04 11:41:09 +0000] [100021] [INFO] Worker exiting (pid: 100021)
+[2025-09-04 11:41:09 +0000] [100019] [INFO] Worker exiting (pid: 100019)
+[2025-09-04 11:41:10 +0000] [100018] [INFO] Shutting down: Master
+[2025-09-04 11:41:10 +0000] [139875] [INFO] Starting gunicorn 23.0.0
+[2025-09-04 11:41:10 +0000] [139875] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (139875)
+[2025-09-04 11:41:10 +0000] [139875] [INFO] Using worker: sync
+[2025-09-04 11:41:10 +0000] [139877] [INFO] Booting worker with pid: 139877
+[2025-09-04 11:41:10 +0000] [139878] [INFO] Booting worker with pid: 139878
+[2025-09-04 11:41:10 +0000] [139879] [INFO] Booting worker with pid: 139879
+[2025-09-04 11:58:46 +0000] [139875] [INFO] Handling signal: term
+[2025-09-04 11:58:46 +0000] [139877] [INFO] Worker exiting (pid: 139877)
+[2025-09-04 11:58:46 +0000] [139878] [INFO] Worker exiting (pid: 139878)
+[2025-09-04 11:58:46 +0000] [139879] [INFO] Worker exiting (pid: 139879)
+[2025-09-04 11:58:48 +0000] [139875] [INFO] Shutting down: Master
+[2025-09-04 11:58:48 +0000] [140285] [INFO] Starting gunicorn 23.0.0
+[2025-09-04 11:58:48 +0000] [140285] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (140285)
+[2025-09-04 11:58:48 +0000] [140285] [INFO] Using worker: sync
+[2025-09-04 11:58:48 +0000] [140288] [INFO] Booting worker with pid: 140288
+[2025-09-04 11:58:48 +0000] [140289] [INFO] Booting worker with pid: 140289
+[2025-09-04 11:58:48 +0000] [140290] [INFO] Booting worker with pid: 140290
+[2025-09-04 12:14:51 +0000] [140285] [INFO] Handling signal: term
+[2025-09-04 12:14:51 +0000] [140289] [INFO] Worker exiting (pid: 140289)
+[2025-09-04 12:14:51 +0000] [140288] [INFO] Worker exiting (pid: 140288)
+[2025-09-04 12:14:51 +0000] [140290] [INFO] Worker exiting (pid: 140290)
+[2025-09-04 12:14:51 +0000] [140285] [INFO] Shutting down: Master
+[2025-09-04 12:14:51 +0000] [140496] [INFO] Starting gunicorn 23.0.0
+[2025-09-04 12:14:51 +0000] [140496] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (140496)
+[2025-09-04 12:14:51 +0000] [140496] [INFO] Using worker: sync
+[2025-09-04 12:14:51 +0000] [140499] [INFO] Booting worker with pid: 140499
+[2025-09-04 12:14:51 +0000] [140500] [INFO] Booting worker with pid: 140500
+[2025-09-04 12:14:51 +0000] [140501] [INFO] Booting worker with pid: 140501
+[2025-09-04 12:52:18 +0000] [140499] [INFO] Worker exiting (pid: 140499)
+[2025-09-04 12:52:18 +0000] [140500] [INFO] Worker exiting (pid: 140500)
+[2025-09-04 12:52:18 +0000] [140496] [INFO] Handling signal: term
+[2025-09-04 12:52:18 +0000] [140501] [INFO] Worker exiting (pid: 140501)
+[2025-09-04 12:52:19 +0000] [140496] [INFO] Shutting down: Master
+[2025-09-04 12:52:19 +0000] [141252] [INFO] Starting gunicorn 23.0.0
+[2025-09-04 12:52:19 +0000] [141252] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (141252)
+[2025-09-04 12:52:19 +0000] [141252] [INFO] Using worker: sync
+[2025-09-04 12:52:19 +0000] [141253] [INFO] Booting worker with pid: 141253
+[2025-09-04 12:52:19 +0000] [141254] [INFO] Booting worker with pid: 141254
+[2025-09-04 12:52:19 +0000] [141255] [INFO] Booting worker with pid: 141255
+[2025-09-04 14:24:03 +0000] [141253] [INFO] Worker exiting (pid: 141253)
+[2025-09-04 14:24:03 +0000] [141255] [INFO] Worker exiting (pid: 141255)
+[2025-09-04 14:24:03 +0000] [141252] [INFO] Handling signal: term
+[2025-09-04 14:24:03 +0000] [141254] [INFO] Worker exiting (pid: 141254)
+[2025-09-04 14:24:04 +0000] [141252] [INFO] Shutting down: Master
+[2025-09-04 14:24:04 +0000] [141614] [INFO] Starting gunicorn 23.0.0
+[2025-09-04 14:24:04 +0000] [141614] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (141614)
+[2025-09-04 14:24:04 +0000] [141614] [INFO] Using worker: sync
+[2025-09-04 14:24:04 +0000] [141615] [INFO] Booting worker with pid: 141615
+[2025-09-04 14:24:05 +0000] [141616] [INFO] Booting worker with pid: 141616
+[2025-09-04 14:24:05 +0000] [141617] [INFO] Booting worker with pid: 141617
+[2025-09-04 14:38:13 +0000] [141615] [INFO] Worker exiting (pid: 141615)
+[2025-09-04 14:38:13 +0000] [141614] [INFO] Handling signal: term
+[2025-09-04 14:38:13 +0000] [141616] [INFO] Worker exiting (pid: 141616)
+[2025-09-04 14:38:13 +0000] [141617] [INFO] Worker exiting (pid: 141617)
+[2025-09-04 14:38:15 +0000] [141614] [INFO] Shutting down: Master
+[2025-09-04 14:38:15 +0000] [141721] [INFO] Starting gunicorn 23.0.0
+[2025-09-04 14:38:15 +0000] [141721] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (141721)
+[2025-09-04 14:38:15 +0000] [141721] [INFO] Using worker: sync
+[2025-09-04 14:38:15 +0000] [141723] [INFO] Booting worker with pid: 141723
+[2025-09-04 14:38:15 +0000] [141724] [INFO] Booting worker with pid: 141724
+[2025-09-04 14:38:15 +0000] [141725] [INFO] Booting worker with pid: 141725
+[2025-09-04 14:54:10 +0000] [141721] [INFO] Handling signal: term
+[2025-09-04 14:54:10 +0000] [141725] [INFO] Worker exiting (pid: 141725)
+[2025-09-04 14:54:10 +0000] [141723] [INFO] Worker exiting (pid: 141723)
+[2025-09-04 14:54:10 +0000] [141724] [INFO] Worker exiting (pid: 141724)
+[2025-09-04 14:54:12 +0000] [141721] [INFO] Shutting down: Master
+[2025-09-04 14:54:12 +0000] [141834] [INFO] Starting gunicorn 23.0.0
+[2025-09-04 14:54:12 +0000] [141834] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (141834)
+[2025-09-04 14:54:12 +0000] [141834] [INFO] Using worker: sync
+[2025-09-04 14:54:12 +0000] [141835] [INFO] Booting worker with pid: 141835
+[2025-09-04 14:54:12 +0000] [141836] [INFO] Booting worker with pid: 141836
+[2025-09-04 14:54:12 +0000] [141837] [INFO] Booting worker with pid: 141837
+[2025-09-04 15:10:40 +0000] [141834] [INFO] Handling signal: term
+[2025-09-04 15:10:40 +0000] [141836] [INFO] Worker exiting (pid: 141836)
+[2025-09-04 15:10:40 +0000] [141837] [INFO] Worker exiting (pid: 141837)
+[2025-09-04 15:10:40 +0000] [141835] [INFO] Worker exiting (pid: 141835)
+[2025-09-04 15:10:41 +0000] [141834] [INFO] Shutting down: Master
+[2025-09-04 15:10:42 +0000] [141951] [INFO] Starting gunicorn 23.0.0
+[2025-09-04 15:10:42 +0000] [141951] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (141951)
+[2025-09-04 15:10:42 +0000] [141951] [INFO] Using worker: sync
+[2025-09-04 15:10:42 +0000] [141952] [INFO] Booting worker with pid: 141952
+[2025-09-04 15:10:42 +0000] [141953] [INFO] Booting worker with pid: 141953
+[2025-09-04 15:10:42 +0000] [141954] [INFO] Booting worker with pid: 141954
+[2025-09-16 06:15:17 +0000] [141953] [INFO] Worker exiting (pid: 141953)
+[2025-09-16 06:15:17 +0000] [141954] [INFO] Worker exiting (pid: 141954)
+[2025-09-16 06:15:17 +0000] [141952] [INFO] Worker exiting (pid: 141952)
+[2025-09-16 06:15:17 +0000] [141951] [INFO] Handling signal: term
+[2025-09-16 06:15:26 +0000] [141951] [INFO] Shutting down: Master
+[2025-09-16 06:15:26 +0000] [208600] [INFO] Starting gunicorn 23.0.0
+[2025-09-16 06:15:26 +0000] [208600] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (208600)
+[2025-09-16 06:15:26 +0000] [208600] [INFO] Using worker: sync
+[2025-09-16 06:15:26 +0000] [208620] [INFO] Booting worker with pid: 208620
+[2025-09-16 06:15:26 +0000] [208621] [INFO] Booting worker with pid: 208621
+[2025-09-16 06:15:26 +0000] [208623] [INFO] Booting worker with pid: 208623
+[2025-09-23 06:33:20 +0000] [208621] [INFO] Worker exiting (pid: 208621)
+[2025-09-23 06:33:20 +0000] [208600] [INFO] Handling signal: term
+[2025-09-23 06:33:20 +0000] [208623] [INFO] Worker exiting (pid: 208623)
+[2025-09-23 06:33:20 +0000] [208620] [INFO] Worker exiting (pid: 208620)
+[2025-09-23 06:33:31 +0000] [208600] [INFO] Shutting down: Master
+[2025-09-23 06:33:31 +0000] [239561] [INFO] Starting gunicorn 23.0.0
+[2025-09-23 06:33:31 +0000] [239561] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (239561)
+[2025-09-23 06:33:31 +0000] [239561] [INFO] Using worker: sync
+[2025-09-23 06:33:31 +0000] [239580] [INFO] Booting worker with pid: 239580
+[2025-09-23 06:33:31 +0000] [239582] [INFO] Booting worker with pid: 239582
+[2025-09-23 06:33:31 +0000] [239584] [INFO] Booting worker with pid: 239584
+[2025-09-30 11:30:56 +0000] [239584] [INFO] Worker exiting (pid: 239584)
+[2025-09-30 11:30:56 +0000] [239582] [INFO] Worker exiting (pid: 239582)
+[2025-09-30 11:30:56 +0000] [239561] [INFO] Handling signal: term
+[2025-09-30 11:30:56 +0000] [239580] [INFO] Worker exiting (pid: 239580)
+[2025-09-30 11:31:05 +0000] [239561] [INFO] Shutting down: Master
+[2025-09-30 11:31:06 +0000] [272699] [INFO] Starting gunicorn 23.0.0
+[2025-09-30 11:31:06 +0000] [272699] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (272699)
+[2025-09-30 11:31:06 +0000] [272699] [INFO] Using worker: sync
+[2025-09-30 11:31:06 +0000] [272702] [INFO] Booting worker with pid: 272702
+[2025-09-30 11:31:06 +0000] [272703] [INFO] Booting worker with pid: 272703
+[2025-09-30 11:31:06 +0000] [272704] [INFO] Booting worker with pid: 272704
+[2025-09-30 11:32:26 +0000] [272703] [INFO] Worker exiting (pid: 272703)
+[2025-09-30 11:32:26 +0000] [272702] [INFO] Worker exiting (pid: 272702)
+[2025-09-30 11:32:26 +0000] [272699] [INFO] Handling signal: term
+[2025-09-30 11:32:26 +0000] [272704] [INFO] Worker exiting (pid: 272704)
+[2025-09-30 11:32:28 +0000] [272699] [INFO] Shutting down: Master
+[2025-09-30 11:32:28 +0000] [272738] [INFO] Starting gunicorn 23.0.0
+[2025-09-30 11:32:28 +0000] [272738] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (272738)
+[2025-09-30 11:32:28 +0000] [272738] [INFO] Using worker: sync
+[2025-09-30 11:32:28 +0000] [272739] [INFO] Booting worker with pid: 272739
+[2025-09-30 11:32:28 +0000] [272740] [INFO] Booting worker with pid: 272740
+[2025-09-30 11:32:28 +0000] [272741] [INFO] Booting worker with pid: 272741
+[2025-09-30 11:35:03 +0000] [272738] [INFO] Handling signal: term
+[2025-09-30 11:35:03 +0000] [272741] [INFO] Worker exiting (pid: 272741)
+[2025-09-30 11:35:03 +0000] [272739] [INFO] Worker exiting (pid: 272739)
+[2025-09-30 11:35:03 +0000] [272740] [INFO] Worker exiting (pid: 272740)
+[2025-09-30 11:35:05 +0000] [272738] [INFO] Shutting down: Master
+[2025-09-30 11:35:05 +0000] [272782] [INFO] Starting gunicorn 23.0.0
+[2025-09-30 11:35:05 +0000] [272782] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (272782)
+[2025-09-30 11:35:05 +0000] [272782] [INFO] Using worker: sync
+[2025-09-30 11:35:05 +0000] [272783] [INFO] Booting worker with pid: 272783
+[2025-09-30 11:35:05 +0000] [272784] [INFO] Booting worker with pid: 272784
+[2025-09-30 11:35:05 +0000] [272785] [INFO] Booting worker with pid: 272785
+[2025-10-01 06:13:12 +0000] [272785] [INFO] Worker exiting (pid: 272785)
+[2025-10-01 06:13:12 +0000] [272784] [INFO] Worker exiting (pid: 272784)
+[2025-10-01 06:13:12 +0000] [272783] [INFO] Worker exiting (pid: 272783)
+[2025-10-01 06:13:12 +0000] [272782] [INFO] Handling signal: term
+[2025-10-01 06:13:22 +0000] [272782] [INFO] Shutting down: Master
+[2025-10-01 06:13:22 +0000] [275545] [INFO] Starting gunicorn 23.0.0
+[2025-10-01 06:13:22 +0000] [275545] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (275545)
+[2025-10-01 06:13:22 +0000] [275545] [INFO] Using worker: sync
+[2025-10-01 06:13:22 +0000] [275564] [INFO] Booting worker with pid: 275564
+[2025-10-01 06:13:22 +0000] [275565] [INFO] Booting worker with pid: 275565
+[2025-10-01 06:13:22 +0000] [275568] [INFO] Booting worker with pid: 275568
+[2025-10-06 09:41:47 +0000] [275564] [INFO] Worker exiting (pid: 275564)
+[2025-10-06 09:41:47 +0000] [275568] [INFO] Worker exiting (pid: 275568)
+[2025-10-06 09:41:47 +0000] [275545] [INFO] Handling signal: term
+[2025-10-06 09:41:47 +0000] [275565] [INFO] Worker exiting (pid: 275565)
+[2025-10-06 09:41:56 +0000] [275545] [INFO] Shutting down: Master
+[2025-10-06 09:41:57 +0000] [299593] [INFO] Starting gunicorn 23.0.0
+[2025-10-06 09:41:57 +0000] [299593] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (299593)
+[2025-10-06 09:41:57 +0000] [299593] [INFO] Using worker: sync
+[2025-10-06 09:41:57 +0000] [299596] [INFO] Booting worker with pid: 299596
+[2025-10-06 09:41:57 +0000] [299597] [INFO] Booting worker with pid: 299597
+[2025-10-06 09:41:57 +0000] [299598] [INFO] Booting worker with pid: 299598
+[2025-10-06 09:41:57 +0000] [299596] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    worker.init_process()
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/util.py", line 370, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/home/ubuntu/Ai_Project/n8n/wsgi.py", line 16, in <module>
+    application = get_wsgi_application()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/django/core/wsgi.py", line 12, in get_wsgi_application
+    django.setup(set_prefix=False)
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/django/__init__.py", line 24, in setup
+    apps.populate(settings.INSTALLED_APPS)
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/django/apps/registry.py", line 91, in populate
+    app_config = AppConfig.create(entry)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/django/apps/config.py", line 193, in create
+    import_module(entry)
+  File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'app'
+[2025-10-06 09:41:57 +0000] [299596] [INFO] Worker exiting (pid: 299596)
+[2025-10-06 09:41:57 +0000] [299598] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    worker.init_process()
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/util.py", line 370, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/home/ubuntu/Ai_Project/n8n/wsgi.py", line 16, in <module>
+    application = get_wsgi_application()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/django/core/wsgi.py", line 12, in get_wsgi_application
+    django.setup(set_prefix=False)
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/django/__init__.py", line 24, in setup
+    apps.populate(settings.INSTALLED_APPS)
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/django/apps/registry.py", line 91, in populate
+    app_config = AppConfig.create(entry)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/django/apps/config.py", line 193, in create
+    import_module(entry)
+  File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'app'
+[2025-10-06 09:41:57 +0000] [299598] [INFO] Worker exiting (pid: 299598)
+[2025-10-06 09:41:57 +0000] [299597] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    worker.init_process()
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/gunicorn/util.py", line 370, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/home/ubuntu/Ai_Project/n8n/wsgi.py", line 16, in <module>
+    application = get_wsgi_application()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/django/core/wsgi.py", line 12, in get_wsgi_application
+    django.setup(set_prefix=False)
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/django/__init__.py", line 24, in setup
+    apps.populate(settings.INSTALLED_APPS)
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/django/apps/registry.py", line 91, in populate
+    app_config = AppConfig.create(entry)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Ai_Project/venv/lib/python3.12/site-packages/django/apps/config.py", line 193, in create
+    import_module(entry)
+  File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'app'
+[2025-10-06 09:41:57 +0000] [299597] [INFO] Worker exiting (pid: 299597)
+[2025-10-06 09:41:57 +0000] [299593] [ERROR] Worker (pid:299597) exited with code 3
+[2025-10-06 09:41:57 +0000] [299593] [ERROR] Worker (pid:299596) was sent SIGTERM!
+[2025-10-06 09:41:57 +0000] [299593] [ERROR] Worker (pid:299598) was sent SIGTERM!
+[2025-10-06 09:41:57 +0000] [299593] [ERROR] Shutting down: Master
+[2025-10-06 09:41:57 +0000] [299593] [ERROR] Reason: Worker failed to boot.
+[2025-10-06 09:43:38 +0000] [299725] [INFO] Starting gunicorn 23.0.0
+[2025-10-06 09:43:38 +0000] [299725] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (299725)
+[2025-10-06 09:43:38 +0000] [299725] [INFO] Using worker: sync
+[2025-10-06 09:43:38 +0000] [299726] [INFO] Booting worker with pid: 299726
+[2025-10-06 09:43:38 +0000] [299727] [INFO] Booting worker with pid: 299727
+[2025-10-06 09:43:38 +0000] [299728] [INFO] Booting worker with pid: 299728
+[2025-10-06 09:53:24 +0000] [299725] [INFO] Handling signal: hup
+[2025-10-06 09:53:24 +0000] [299725] [INFO] Hang up: Master
+[2025-10-06 09:53:24 +0000] [299800] [INFO] Booting worker with pid: 299800
+[2025-10-06 09:53:24 +0000] [299801] [INFO] Booting worker with pid: 299801
+[2025-10-06 09:53:24 +0000] [299726] [INFO] Worker exiting (pid: 299726)
+[2025-10-06 09:53:24 +0000] [299727] [INFO] Worker exiting (pid: 299727)
+[2025-10-06 09:53:24 +0000] [299802] [INFO] Booting worker with pid: 299802
+[2025-10-06 09:53:24 +0000] [299728] [INFO] Worker exiting (pid: 299728)
+[2025-10-06 09:53:25 +0000] [299725] [ERROR] Worker (pid:299726) was sent SIGTERM!
+[2025-10-06 09:53:25 +0000] [299725] [ERROR] Worker (pid:299728) was sent SIGTERM!
+[2025-10-06 09:53:25 +0000] [299725] [ERROR] Worker (pid:299727) was sent SIGTERM!
+[2025-10-06 09:53:33 +0000] [299725] [INFO] Handling signal: term
+[2025-10-06 09:53:33 +0000] [299800] [INFO] Worker exiting (pid: 299800)
+[2025-10-06 09:53:33 +0000] [299802] [INFO] Worker exiting (pid: 299802)
+[2025-10-06 09:53:33 +0000] [299801] [INFO] Worker exiting (pid: 299801)
+[2025-10-06 09:53:33 +0000] [299725] [ERROR] Worker (pid:299802) was sent SIGTERM!
+[2025-10-06 09:53:33 +0000] [299725] [INFO] Shutting down: Master
+[2025-10-06 09:55:20 +0000] [299829] [INFO] Starting gunicorn 23.0.0
+[2025-10-06 09:55:20 +0000] [299829] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (299829)
+[2025-10-06 09:55:20 +0000] [299829] [INFO] Using worker: sync
+[2025-10-06 09:55:20 +0000] [299830] [INFO] Booting worker with pid: 299830
+[2025-10-06 09:55:20 +0000] [299831] [INFO] Booting worker with pid: 299831
+[2025-10-06 09:55:20 +0000] [299832] [INFO] Booting worker with pid: 299832
+[2025-10-06 09:55:45 +0000] [299829] [INFO] Handling signal: int
+[2025-10-06 09:55:45 +0000] [299830] [INFO] Worker exiting (pid: 299830)
+[2025-10-06 09:55:45 +0000] [299832] [INFO] Worker exiting (pid: 299832)
+[2025-10-06 09:55:45 +0000] [299831] [INFO] Worker exiting (pid: 299831)
+[2025-10-06 09:55:45 +0000] [299829] [ERROR] Worker (pid:299830) was sent SIGINT!
+[2025-10-06 09:55:45 +0000] [299829] [ERROR] Worker (pid:299831) was sent SIGINT!
+[2025-10-06 09:55:45 +0000] [299829] [ERROR] Worker (pid:299832) was sent SIGINT!
+[2025-10-06 09:55:45 +0000] [299829] [INFO] Shutting down: Master
+[2025-10-06 10:03:13 +0000] [299860] [INFO] Starting gunicorn 23.0.0
+[2025-10-06 10:03:13 +0000] [299860] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (299860)
+[2025-10-06 10:03:13 +0000] [299860] [INFO] Using worker: sync
+[2025-10-06 10:03:13 +0000] [299861] [INFO] Booting worker with pid: 299861
+[2025-10-06 10:03:13 +0000] [299862] [INFO] Booting worker with pid: 299862
+[2025-10-06 10:03:13 +0000] [299863] [INFO] Booting worker with pid: 299863
+[2025-10-06 10:03:46 +0000] [299860] [INFO] Handling signal: int
+[2025-10-06 10:03:46 +0000] [299861] [INFO] Worker exiting (pid: 299861)
+[2025-10-06 10:03:46 +0000] [299863] [INFO] Worker exiting (pid: 299863)
+[2025-10-06 10:03:46 +0000] [299862] [INFO] Worker exiting (pid: 299862)
+[2025-10-06 10:03:46 +0000] [299860] [ERROR] Worker (pid:299863) was sent SIGINT!
+[2025-10-06 10:03:46 +0000] [299860] [ERROR] Worker (pid:299862) was sent SIGINT!
+[2025-10-06 10:03:46 +0000] [299860] [ERROR] Worker (pid:299861) was sent SIGINT!
+[2025-10-06 10:03:46 +0000] [299860] [INFO] Shutting down: Master
+[2025-10-06 10:21:36 +0000] [299933] [INFO] Starting gunicorn 23.0.0
+[2025-10-06 10:21:36 +0000] [299933] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (299933)
+[2025-10-06 10:21:36 +0000] [299933] [INFO] Using worker: sync
+[2025-10-06 10:21:36 +0000] [299934] [INFO] Booting worker with pid: 299934
+[2025-10-06 10:21:36 +0000] [299935] [INFO] Booting worker with pid: 299935
+[2025-10-06 10:21:36 +0000] [299936] [INFO] Booting worker with pid: 299936
+[2025-10-06 10:22:26 +0000] [299933] [INFO] Handling signal: int
+[2025-10-06 10:22:26 +0000] [299935] [INFO] Worker exiting (pid: 299935)
+[2025-10-06 10:22:26 +0000] [299934] [INFO] Worker exiting (pid: 299934)
+[2025-10-06 10:22:26 +0000] [299936] [INFO] Worker exiting (pid: 299936)
+[2025-10-06 10:22:26 +0000] [299933] [ERROR] Worker (pid:299935) was sent SIGINT!
+[2025-10-06 10:22:26 +0000] [299933] [ERROR] Worker (pid:299936) was sent SIGINT!
+[2025-10-06 10:22:26 +0000] [299933] [ERROR] Worker (pid:299934) was sent SIGINT!
+[2025-10-06 10:22:26 +0000] [299933] [INFO] Shutting down: Master
+[2025-10-06 10:25:04 +0000] [300028] [INFO] Starting gunicorn 23.0.0
+[2025-10-06 10:25:04 +0000] [300028] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (300028)
+[2025-10-06 10:25:04 +0000] [300028] [INFO] Using worker: sync
+[2025-10-06 10:25:04 +0000] [300029] [INFO] Booting worker with pid: 300029
+[2025-10-06 10:25:04 +0000] [300030] [INFO] Booting worker with pid: 300030
+[2025-10-06 10:25:04 +0000] [300031] [INFO] Booting worker with pid: 300031
+[2025-10-06 10:31:09 +0000] [300028] [INFO] Handling signal: int
+[2025-10-06 10:31:09 +0000] [300030] [INFO] Worker exiting (pid: 300030)
+[2025-10-06 10:31:09 +0000] [300029] [INFO] Worker exiting (pid: 300029)
+[2025-10-06 10:31:09 +0000] [300031] [INFO] Worker exiting (pid: 300031)
+[2025-10-06 10:31:09 +0000] [300028] [ERROR] Worker (pid:300031) was sent SIGINT!
+[2025-10-06 10:31:09 +0000] [300028] [ERROR] Worker (pid:300029) was sent SIGINT!
+[2025-10-06 10:31:09 +0000] [300028] [INFO] Shutting down: Master
+[2025-10-06 10:31:25 +0000] [300038] [INFO] Starting gunicorn 23.0.0
+[2025-10-06 10:31:25 +0000] [300038] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (300038)
+[2025-10-06 10:31:25 +0000] [300038] [INFO] Using worker: sync
+[2025-10-06 10:31:25 +0000] [300039] [INFO] Booting worker with pid: 300039
+[2025-10-06 10:31:25 +0000] [300040] [INFO] Booting worker with pid: 300040
+[2025-10-06 10:31:25 +0000] [300041] [INFO] Booting worker with pid: 300041
+[2025-10-06 10:32:17 +0000] [300038] [INFO] Handling signal: int
+[2025-10-06 10:32:17 +0000] [300041] [INFO] Worker exiting (pid: 300041)
+[2025-10-06 10:32:17 +0000] [300039] [INFO] Worker exiting (pid: 300039)
+[2025-10-06 10:32:17 +0000] [300040] [INFO] Worker exiting (pid: 300040)
+[2025-10-06 10:32:17 +0000] [300038] [ERROR] Worker (pid:300040) was sent SIGINT!
+[2025-10-06 10:32:18 +0000] [300038] [INFO] Shutting down: Master
+[2025-10-06 10:33:22 +0000] [300062] [INFO] Starting gunicorn 23.0.0
+[2025-10-06 10:33:22 +0000] [300062] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (300062)
+[2025-10-06 10:33:22 +0000] [300062] [INFO] Using worker: sync
+[2025-10-06 10:33:22 +0000] [300063] [INFO] Booting worker with pid: 300063
+[2025-10-06 10:33:22 +0000] [300064] [INFO] Booting worker with pid: 300064
+[2025-10-06 10:33:22 +0000] [300065] [INFO] Booting worker with pid: 300065
+[2025-10-06 10:34:24 +0000] [300062] [INFO] Handling signal: int
+[2025-10-06 10:34:24 +0000] [300065] [INFO] Worker exiting (pid: 300065)
+[2025-10-06 10:34:24 +0000] [300064] [INFO] Worker exiting (pid: 300064)
+[2025-10-06 10:34:24 +0000] [300063] [INFO] Worker exiting (pid: 300063)
+[2025-10-06 10:34:24 +0000] [300062] [ERROR] Worker (pid:300065) was sent SIGINT!
+[2025-10-06 10:34:24 +0000] [300062] [ERROR] Worker (pid:300063) was sent SIGINT!
+[2025-10-06 10:34:24 +0000] [300062] [ERROR] Worker (pid:300064) was sent SIGINT!
+[2025-10-06 10:34:24 +0000] [300062] [INFO] Shutting down: Master
+[2025-10-06 10:34:28 +0000] [300067] [INFO] Starting gunicorn 23.0.0
+[2025-10-06 10:34:28 +0000] [300067] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (300067)
+[2025-10-06 10:34:28 +0000] [300067] [INFO] Using worker: sync
+[2025-10-06 10:34:28 +0000] [300068] [INFO] Booting worker with pid: 300068
+[2025-10-06 10:34:28 +0000] [300069] [INFO] Booting worker with pid: 300069
+[2025-10-06 10:34:28 +0000] [300070] [INFO] Booting worker with pid: 300070
+[2025-10-06 10:34:43 +0000] [300067] [INFO] Handling signal: int
+[2025-10-06 10:34:43 +0000] [300068] [INFO] Worker exiting (pid: 300068)
+[2025-10-06 10:34:43 +0000] [300069] [INFO] Worker exiting (pid: 300069)
+[2025-10-06 10:34:43 +0000] [300070] [INFO] Worker exiting (pid: 300070)
+[2025-10-06 10:34:43 +0000] [300067] [ERROR] Worker (pid:300068) was sent SIGINT!
+[2025-10-06 10:34:43 +0000] [300067] [ERROR] Worker (pid:300070) was sent SIGINT!
+[2025-10-06 10:34:43 +0000] [300067] [ERROR] Worker (pid:300069) was sent SIGINT!
+[2025-10-06 10:34:43 +0000] [300067] [INFO] Shutting down: Master
+[2025-10-06 10:38:27 +0000] [300096] [INFO] Starting gunicorn 23.0.0
+[2025-10-06 10:38:27 +0000] [300096] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (300096)
+[2025-10-06 10:38:27 +0000] [300096] [INFO] Using worker: sync
+[2025-10-06 10:38:27 +0000] [300097] [INFO] Booting worker with pid: 300097
+[2025-10-06 10:38:28 +0000] [300098] [INFO] Booting worker with pid: 300098
+[2025-10-06 10:38:28 +0000] [300099] [INFO] Booting worker with pid: 300099
+[2025-10-09 11:21:43 +0000] [311719] [INFO] Starting gunicorn 23.0.0
+[2025-10-09 11:21:43 +0000] [311719] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (311719)
+[2025-10-09 11:21:43 +0000] [311719] [INFO] Using worker: sync
+[2025-10-09 11:21:43 +0000] [311720] [INFO] Booting worker with pid: 311720
+[2025-10-09 11:21:43 +0000] [311721] [INFO] Booting worker with pid: 311721
+[2025-10-09 11:21:43 +0000] [311722] [INFO] Booting worker with pid: 311722
+[2025-10-15 05:56:00 +0000] [311719] [INFO] Handling signal: term
+[2025-10-15 05:56:00 +0000] [311722] [INFO] Worker exiting (pid: 311722)
+[2025-10-15 05:56:00 +0000] [311721] [INFO] Worker exiting (pid: 311721)
+[2025-10-15 05:56:00 +0000] [311720] [INFO] Worker exiting (pid: 311720)
+[2025-10-15 05:56:09 +0000] [311719] [INFO] Shutting down: Master
+[2025-10-15 05:56:09 +0000] [345633] [INFO] Starting gunicorn 23.0.0
+[2025-10-15 05:56:09 +0000] [345633] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (345633)
+[2025-10-15 05:56:09 +0000] [345633] [INFO] Using worker: sync
+[2025-10-15 05:56:09 +0000] [345636] [INFO] Booting worker with pid: 345636
+[2025-10-15 05:56:09 +0000] [345637] [INFO] Booting worker with pid: 345637
+[2025-10-15 05:56:09 +0000] [345638] [INFO] Booting worker with pid: 345638
+[2025-10-15 06:36:37 +0000] [345633] [INFO] Handling signal: term
+[2025-10-15 06:36:37 +0000] [345638] [INFO] Worker exiting (pid: 345638)
+[2025-10-15 06:36:37 +0000] [345636] [INFO] Worker exiting (pid: 345636)
+[2025-10-15 06:36:37 +0000] [345637] [INFO] Worker exiting (pid: 345637)
+[2025-10-15 06:36:39 +0000] [345633] [INFO] Shutting down: Master

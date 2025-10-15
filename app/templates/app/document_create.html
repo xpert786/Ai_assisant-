@@ -1,0 +1,97 @@
+{% extends "app/base.html" %}
+
+{% block title %}Create Document{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Document Creation -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Create Document</h2>
+            <p class="text-muted">Generate a document from a template for {{ message.client_name|default:"Unknown Client" }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'message_detail' message.id %}" class="btn btn-outline-secondary">Back to Message</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Client Information -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Client Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Name:</div>
+                        <div class="col-md-8">{{ message.client_name|default:"Not detected" }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Contact:</div>
+                        <div class="col-md-8">{{ message.client_contact|default:"Not detected" }}</div>
+                    </div>
+                    
+                    {% if client_info %}
+                        <hr>
+                        <h6 class="mb-3">Airtable Data</h6>
+                        {% for key, value in client_info.items %}
+                            <div class="row mb-2">
+                                <div class="col-md-4 fw-bold">{{ key }}:</div>
+                                <div class="col-md-8">
+                                    {% if value|stringformat:"s"|length > 100 %}
+                                        {{ value|stringformat:"s"|truncatechars:100 }}
+                                    {% else %}
+                                        {{ value|stringformat:"s" }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-warning">
+                            No client information found in Airtable. The document will only use the information extracted from the message.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Templates Selection -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Select Template</h5>
+                </div>
+                <div class="card-body">
+                    {% if templates %}
+                        <div class="row">
+                            {% for template in templates %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card card-hover h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ template.fields.Name }}</h5>
+                                            <h6 class="card-subtitle mb-2 text-muted">{{ template.fields.Type|default:"Document" }}</h6>
+                                            <p class="card-text">{{ template.fields.Description|default:""|truncatechars:100 }}</p>
+                                        </div>
+                                        <div class="card-footer bg-transparent border-top-0">
+                                            <form method="post" action="{% url 'document_create' message_id=message.id %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="template_id" value="{{ template.id }}">
+                                                <button type="submit" class="btn btn-outline-primary btn-sm w-100">Use This Template</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            No templates found in Airtable. Please add templates to the Templates table.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,1166 @@
+
+{% extends "app/base.html" %}
+
+{% block title %}AI Assistant{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="app-header text-center fade-in">
+        <h1 class="app-title display-4">AI Assistant</h1>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1100;">
+        <!-- Success Toast Template -->
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span id="successToastMessage">Operation successful</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        
+        <!-- Warning Toast Template -->
+        <div id="warningToast" class="toast align-items-center text-dark bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <span id="warningToastMessage">Warning message</span>
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        
+        <!-- Error Toast Template -->
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <span id="errorToastMessage">An error occurred</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        
+        <!-- Confirm Toast Template -->
+        <div id="confirmToast" class="toast align-items-center text-dark bg-light border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+            <div class="d-flex flex-column">
+                <div class="toast-header">
+                    <i class="bi bi-question-circle me-2 text-accent"></i>
+                    <strong class="me-auto">Confirmation</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    <p id="confirmToastMessage">Are you sure you want to proceed?</p>
+                    <div class="mt-2 pt-2 border-top d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="toast">Cancel</button>
+                        <button type="button" class="btn btn-accent" id="confirmToastBtn">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Interface -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <!-- Input Section -->
+            <div class="card border-0 shadow-sm fade-in mb-4 input-card">
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" action="{% url 'message_create' %}" enctype="multipart/form-data" id="messageForm">
+                        {% csrf_token %}
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="message-input-container">
+                                    <label for="{{ form.content.id_for_label }}" class="form-label fs-5 mb-3">
+                                        <i class="bi bi-chat-left-text me-2 text-accent"></i>Enter Message
+                                    </label>
+                                    <div class="position-relative">
+                                        {{ form.content }}
+                                        <small class="text-muted d-block mt-2">Paste your message here</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="upload-container">
+                                    <label for="{{ form.image.id_for_label }}" class="form-label fs-5 mb-3">
+                                        <i class="bi bi-image me-2 text-accent"></i>Upload Screenshot
+                                    </label>
+                                    <div class="position-relative">
+                                        <div class="upload-area p-4 text-center border rounded mb-2" id="uploadArea">
+                                            <i class="bi bi-cloud-arrow-up display-4 text-accent mb-2"></i>
+                                            <p class="mb-0">Drop your image here or click to browse</p>
+                                        </div>
+                                        <div class="position-absolute" style="top: 0; left: 0; right: 0; bottom: 0; opacity: 0;">
+                                            {{ form.image }}
+                                        </div>
+                                        <div id="imagePreview" class="mt-2 text-center d-none">
+                                            <img src="" alt="Preview" class="img-fluid rounded" style="max-height: 150px;">
+                                            <button type="button" class="btn btn-sm btn-outline-danger mt-2" id="removeImage">
+                                                <i class="bi bi-x"></i> Remove
+                                            </button>
+                                        </div>
+                                        <small class="text-muted d-block mt-2">Upload a screenshot of conversation. Large images will be optimized automatically to prevent errors.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg generate-btn">
+                                <i class="bi bi-lightning-charge me-2"></i> Generate AI Response
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Response Section (Only shown when there's a response) -->
+            {% if selected_message %}
+                    <div class="card border-0 shadow-sm fade-in mb-4 highlight-card response-card">
+                        <div class="card-header bg-transparent border-0 py-3">
+                            <h3 class="fs-5 mb-0 text-accent">
+                                <i class="bi bi-robot me-2"></i>AI Response
+                            {% if selected_message.from_knowledge_base %}
+                                <span class="badge bg-accent rounded-pill px-3 py-2 ms-2">
+                                    <i class="bi bi-database-check me-1"></i>
+                                    From Airtable
+                                </span>
+                                {% endif %}
+                            </h3>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="ai-response p-3 bg-primary bg-opacity-10 rounded">
+                                    {% if selected_message.status == "pending" %}
+                                        <div class="text-center py-3">
+                                            <div class="spinner-border text-accent mb-3" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p class="mb-0">Processing your image... This may take a moment.</p>
+                                            <small class="text-muted">The page will automatically refresh in a few seconds.</small>
+                                        </div>
+                                        {% else %}
+                                    <p class="mb-3">{{ selected_message.final_response|default:selected_message.ai_response|linebreaksbr }}</p>
+                                        <div class="d-flex justify-content-end mt-3">
+                                            <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-outline-accent copy-btn" data-content="{{ selected_message.final_response|default:selected_message.ai_response }}">
+                                                    <i class="bi bi-clipboard me-1"></i>Copy
+                                                </button>
+                                            <a href="{% url 'message_edit' selected_message.id %}" class="btn btn-sm btn-outline-accent">
+                                                    <i class="bi bi-pencil me-1"></i>Edit
+                                                </a>
+                                            <button type="button" class="btn btn-sm btn-outline-accent save-kb-btn" data-id="{{ selected_message.id }}">
+                                                    <i class="bi bi-database-add me-1"></i>
+                                                    Save to Airtable
+                                                </button>
+                                            <button type="button" class="btn btn-sm btn-outline-accent save-airtable-accounts-btn" data-id="{{ selected_message.id }}">
+                                                    <i class="bi bi-cloud-arrow-down me-1"></i>Save to Airtable Accounts
+                                                </button>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Lead Creation Modal -->
+<div class="modal fade" id="leadCreatedModal" tabindex="-1" aria-labelledby="leadCreatedModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="leadCreatedModalLabel">Create Lead in Airtable</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Would you like to create a lead in Airtable for this client?</p>
+                <div class="client-info mb-3">
+                    <p class="mb-1"><strong>Name:</strong> <span id="clientName"></span></p>
+                    <p class="mb-0"><strong>Contact:</strong> <span id="clientContact"></span></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Thanks</button>
+                <button type="button" class="btn btn-accent" id="confirmLeadBtn">Yes, Create Lead</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Save to Airtable Accounts Confirmation Modal -->
+<div class="modal fade" id="saveAirtableAccountsModal" tabindex="-1" aria-labelledby="saveAirtableAccountsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="saveAirtableAccountsModalLabel">Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to save this response to Airtable?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-accent" id="confirmSaveAirtableAccountsBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Duplicate Knowledge Base Modal -->
+<div class="modal fade" id="duplicateKnowledgeBaseModal" tabindex="-1" aria-labelledby="duplicateKnowledgeBaseModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="duplicateKnowledgeBaseModalLabel"><i class="bi bi-question-circle me-2 text-accent"></i>Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="duplicateKnowledgeBaseModalBody">
+        <!-- Message will be inserted by JS -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-accent" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Duplicate Lead Modal -->
+<div class="modal fade" id="duplicateLeadModal" tabindex="-1" aria-labelledby="duplicateLeadModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="duplicateLeadModalLabel"><i class="bi bi-question-circle me-2 text-accent"></i>Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="duplicateLeadModalBody">
+        <!-- Message will be inserted by JS -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-accent" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Client Exists Modal -->
+<div class="modal fade" id="clientExistsModal" tabindex="-1" aria-labelledby="clientExistsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="clientExistsModalLabel">
+          <i class="bi bi-check-circle me-2"></i>Existing Client Found
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-success border-0">
+          <i class="bi bi-info-circle me-2"></i>
+          <strong>Great news!</strong> This client already exists in your database. You can update their information or save the response directly.
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-person me-2"></i>Client Information</h6>
+              </div>
+              <div class="card-body" id="clientInfoDisplay">
+                <!-- Client info will be inserted here -->
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-building me-2"></i>Account Information</h6>
+              </div>
+              <div class="card-body" id="accountInfoDisplay">
+                <!-- Account info will be inserted here -->
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-4">
+          <h6 class="text-dark mb-3"><i class="bi bi-gear me-2"></i>Choose Your Action:</h6>
+          <div class="d-grid gap-2">
+            <button type="button" class="btn btn-success btn-lg" id="saveResponseBtn">
+              <i class="bi bi-database-add me-2"></i>Save Response to Knowledge Base
+              <small class="d-block text-white-50">Saves AI response to Knowledge Base for future use</small>
+            </button>
+            <button type="button" class="btn btn-warning btn-lg" id="updateClientBtn">
+              <i class="bi bi-pencil me-2"></i>Update Client Information
+              <small class="d-block text-dark">Updates existing client details and saves response</small>
+            </button>
+            <button type="button" class="btn btn-info btn-lg" id="createLeadBtn">
+              <i class="bi bi-person-plus me-2"></i>Create New Lead Entry
+              <small class="d-block text-white-50">Creates a new lead record and saves response</small>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-2"></i>Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create New Client Modal -->
+<div class="modal fade" id="createClientModal" tabindex="-1" aria-labelledby="createClientModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="createClientModalLabel">
+          <i class="bi bi-person-plus me-2"></i>Create New Client
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info border-0">
+          <i class="bi bi-info-circle me-2"></i>
+          <strong>New Client Detected!</strong> This client doesn't exist in your database yet. Please fill in the details below to create a new client record.
+        </div>
+        
+        <form id="createClientForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="clientName" class="form-label fw-bold">
+                  <i class="bi bi-person me-1"></i>Full Name *
+                </label>
+                <input type="text" class="form-control form-control-lg" id="clientName" required placeholder="Enter client's full name">
+                <div class="form-text">Required field for client identification</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="clientContact" class="form-label fw-bold">
+                  <i class="bi bi-telephone me-1"></i>Contact Information
+                </label>
+                <input type="text" class="form-control form-control-lg" id="clientContact" placeholder="Email address or phone number">
+                <div class="form-text">Email or phone number for future contact</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="clientMessage" class="form-label fw-bold">
+              <i class="bi bi-chat-dots me-1"></i>Original Message
+            </label>
+            <textarea class="form-control" id="clientMessage" rows="3" readonly style="background-color: #f8f9fa;"></textarea>
+            <div class="form-text">This is the message that was sent by the client</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="clientNotes" class="form-label fw-bold">
+              <i class="bi bi-sticky me-1"></i>Additional Notes
+            </label>
+            <textarea class="form-control" id="clientNotes" rows="2" placeholder="Add any additional information about this client..."></textarea>
+            <div class="form-text">Optional: Add any relevant notes or context</div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-2"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-success btn-lg" id="confirmCreateClientBtn">
+          <i class="bi bi-check-circle me-2"></i>Create Client & Save Response
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Search Results Modal removed as search functionality was removed -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation for either content or image
+    const form = document.getElementById('messageForm');
+    const contentInput = document.getElementById('{{ form.content.id_for_label }}');
+    const imageInput = document.getElementById('{{ form.image.id_for_label }}');
+    const uploadArea = document.getElementById('uploadArea');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = imagePreview.querySelector('img');
+    const removeButton = document.getElementById('removeImage');
+    
+    // Auto-refresh for pending image processing
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.id == request.session.new_message_id and message.status == "pending" %}
+                setTimeout(function() {
+                    window.location.reload();
+                }, 5000); // Refresh every 5 seconds
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    
+    // Hide notifications about deleted messages
+    document.querySelectorAll('.alert').forEach(alert => {
+        if (alert.textContent.includes('deleted') && alert.textContent.includes('messages')) {
+            alert.style.display = 'none';
+        }
+    });
+    
+    // Show loading indicator when submitting form with image
+    form.addEventListener('submit', function(e) {
+        if (imageInput.files.length > 0) {
+            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...';
+            submitButton.disabled = true;
+        }   
+    });
+    
+    // Toast notification functions
+    function showSuccessToast(message) {
+        const successToast = document.getElementById('successToast');
+        const successToastMessage = document.getElementById('successToastMessage');
+        successToastMessage.textContent = message;
+        const toast = new bootstrap.Toast(successToast, { delay: 5000 });
+        toast.show();
+    }
+    
+    function showWarningToast(message) {
+        const warningToast = document.getElementById('warningToast');
+        const warningToastMessage = document.getElementById('warningToastMessage');
+        warningToastMessage.textContent = message;
+        const toast = new bootstrap.Toast(warningToast, { delay: 5000 });
+        toast.show();
+    }
+    
+    function showErrorToast(message) {
+        const errorToast = document.getElementById('errorToast');
+        const errorToastMessage = document.getElementById('errorToastMessage');
+        errorToastMessage.textContent = message;
+        const toast = new bootstrap.Toast(errorToast, { delay: 5000 });
+        toast.show();
+    }
+    
+    function showConfirmToast(message, callback) {
+        const confirmToast = document.getElementById('confirmToast');
+        const confirmToastMessage = document.getElementById('confirmToastMessage');
+        const confirmToastBtn = document.getElementById('confirmToastBtn');
+        
+        confirmToastMessage.textContent = message;
+        const toast = new bootstrap.Toast(confirmToast);
+        
+        // Remove any existing event listeners
+        const newConfirmBtn = confirmToastBtn.cloneNode(true);
+        confirmToastBtn.parentNode.replaceChild(newConfirmBtn, confirmToastBtn);
+        
+        // Add new event listener
+        newConfirmBtn.addEventListener('click', function() {
+            toast.hide();
+            callback(true);
+        });
+        
+        // Show the toast
+        toast.show();
+        
+        // Return false by default (if toast is dismissed)
+        return false;
+    }
+    
+    // Form validation
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (!contentInput.value.trim() && !imageInput.files.length) {
+                e.preventDefault();
+                
+                // Add shake animation to form
+                form.classList.add('shake');
+                setTimeout(() => form.classList.remove('shake'), 500);
+                
+                // Show error toast
+                showErrorToast('Please enter a message OR upload a screenshot (or both)');
+            } else {
+                // Add loading state to button
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Generating...';
+                submitBtn.disabled = true;
+            }
+        });
+    }
+    
+    // Upload area enhancements
+    if (uploadArea && imageInput) {
+        // Handle drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            uploadArea.classList.add('border-accent');
+        }
+        
+        function unhighlight() {
+            uploadArea.classList.remove('border-accent');
+        }
+        
+        // Handle file drop
+        uploadArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                imageInput.files = files;
+                updateImagePreview();
+            }
+        }
+        
+        // Handle file selection
+        uploadArea.addEventListener('click', () => {
+            imageInput.click();
+        });
+        
+        imageInput.addEventListener('change', updateImagePreview);
+        
+        // Ensure we only select images
+        try { imageInput.setAttribute('accept', 'image/*'); } catch (e) {}
+
+        function updateImagePreview() {
+            if (imageInput.files && imageInput.files[0]) {
+                const file = imageInput.files[0];
+                // Warn for very large files; backend will optimize automatically
+                const eightMB = 8 * 1024 * 1024;
+                if (file.size > eightMB) {
+                    showWarningToast('Large image detected. We will optimize it automatically to avoid errors.');
+                }
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    imagePreview.classList.remove('d-none');
+                    uploadArea.classList.add('d-none');
+                }
+                
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // Handle remove button
+        if (removeButton) {
+            removeButton.addEventListener('click', function() {
+                imageInput.value = '';
+                imagePreview.classList.add('d-none');
+                uploadArea.classList.remove('d-none');
+            });
+        }
+    }
+    
+    // Copy button functionality
+    document.querySelectorAll('.copy-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const content = this.getAttribute('data-content');
+            navigator.clipboard.writeText(content).then(() => {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="bi bi-check me-1"></i>Copied!';
+                this.classList.remove('btn-outline-accent');
+                this.classList.add('btn-success');
+                
+                showSuccessToast('Response copied to clipboard');
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-outline-accent');
+                }, 2000);
+            });
+        });
+    });
+    
+    // Client Search functionality removed as requested
+    
+    // Save to Knowledge Base functionality (direct save, no modal)
+    document.querySelectorAll('.save-kb-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const messageId = this.getAttribute('data-id');
+            const originalText = this.innerHTML;
+            
+            // Show loading state
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving...';
+            
+            // Prefer using any inline edited response if visible on page
+            let editedText = '';
+            const inlineEditor = document.querySelector('#editResponseForm textarea, #id_edited_response');
+            if (inlineEditor && inlineEditor.value && inlineEditor.value.trim()) {
+                editedText = inlineEditor.value.trim();
+            }
+
+            // Directly save to KB via handle-client-action
+            fetch(`/messages/${messageId}/handle-client-action/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(editedText ? { action: 'save_response', response_override: editedText } : { action: 'save_response' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessToast(data.message || 'Successfully saved to Airtable');
+                    button.classList.remove('btn-outline-accent');
+                    button.classList.add('btn-success');
+                    button.innerHTML = '<i class="bi bi-check me-1"></i>Saved';
+                    button.disabled = true;
+                } else {
+                    if (data.duplicate) {
+                        showWarningToast(data.message || 'Already exists in Knowledge Base');
+                    } else {
+                        showErrorToast('Error: ' + (data.message || 'Failed to save to Airtable'));
+                    }
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showErrorToast('An error occurred while saving to Airtable');
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        });
+    });
+    
+    // Save to Airtable Accounts functionality
+    document.querySelectorAll('.save-airtable-accounts-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent form submit/page refresh
+            const messageId = this.getAttribute('data-id');
+            const originalText = this.innerHTML;
+            const modal = new bootstrap.Modal(document.getElementById('saveAirtableAccountsModal'));
+            window.lastAirtableAccountsBtn = button; // Store for focus restore
+            modal.show();
+
+            const confirmBtn = document.getElementById('confirmSaveAirtableAccountsBtn');
+            confirmBtn.onclick = null;
+            confirmBtn.onclick = (e) => {
+                e.preventDefault();
+                modal.hide();
+                button.disabled = true;
+                button.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving...';
+                fetch(`/messages/${messageId}/save-to-airtable-accounts/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showSuccessToast(data.message || 'Successfully saved to Airtable Accounts');
+                        button.classList.remove('btn-outline-accent');
+                        button.classList.add('btn-success');
+                        button.innerHTML = '<i class="bi bi-check me-1"></i>Saved';
+                        button.disabled = true;
+                    } else {
+                        // Check if this is a duplicate company case
+                        if (data.is_duplicate && data.message === 'This company already exists') {
+                            // Show a specific popup for duplicate companies
+                            showDuplicateCompanyPopup(data.message, data.existing_companies || []);
+                        } else {
+                            showErrorToast('Error: ' + (data.message || 'Failed to save to Airtable Accounts'));
+                        }
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showErrorToast('An error occurred while saving to Airtable Accounts');
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                });
+            };
+        });
+    });
+    // Accessibility: Restore focus to button after modal closes
+    const modalEl = document.getElementById('saveAirtableAccountsModal');
+    if (modalEl) {
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            if (window.lastAirtableAccountsBtn) window.lastAirtableAccountsBtn.focus();
+        });
+    }
+    
+    // Create Lead functionality
+    document.querySelectorAll('.create-lead-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const messageId = this.getAttribute('data-id');
+            const clientName = this.getAttribute('data-name') || 'Unknown';
+            const clientContact = this.getAttribute('data-contact') || 'Unknown';
+            
+            if (typeof window.showConfirmDialog === 'function') {
+                // Set confirmation message with client details
+                const message = `Are you sure you want to create a lead in Airtable for ${clientName} (${clientContact})?`;
+                
+                window.showConfirmDialog(message, (confirmed) => {
+                    if (confirmed) {
+                        this.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Creating...';
+                        this.disabled = true;
+                        
+                        fetch(`/messages/${messageId}/create-lead/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                showSuccessToast('Success: ' + data.message);
+                                button.innerHTML = '<i class="bi bi-check me-1"></i>Lead Created';
+                                button.disabled = true;
+                            } else {
+                                // Check if this is a duplicate lead
+                                if (data.is_duplicate && data.message === 'This lead already exists') {
+                                    // Show a specific popup for duplicate leads
+                                    showDuplicateLeadPopup('This Leads Already Exist', data.existing_client || {});
+                                } else {
+                                    showErrorToast('Error: ' + data.message);
+                                }
+                                this.innerHTML = '<i class="bi bi-person-plus me-1"></i>Create Lead';
+                                this.disabled = false;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showErrorToast('An error occurred. Please try again.');
+                            this.innerHTML = '<i class="bi bi-person-plus me-1"></i>Create Lead';
+                            this.disabled = false;
+                        });
+                    }
+                });
+            } else {
+                // Set modal content
+                document.getElementById('clientName').textContent = clientName;
+                document.getElementById('clientContact').textContent = clientContact;
+                
+                // Show modal
+                const leadModal = new bootstrap.Modal(document.getElementById('leadCreatedModal'));
+                leadModal.show();
+                
+                // Handle confirm button
+                document.getElementById('confirmLeadBtn').onclick = function() {
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Creating...';
+                    this.disabled = true;
+                    
+                    fetch(`/messages/${messageId}/create-lead/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showSuccessToast('Success: ' + data.message);
+                            leadModal.hide();
+                            button.innerHTML = '<i class="bi bi-check me-1"></i>Lead Created';
+                            button.disabled = true;
+                        } else {
+                            // Check if this is a duplicate lead
+                            if (data.is_duplicate && data.message === 'This lead already exists') {
+                                // Show a specific popup for duplicate leads
+                                showDuplicateLeadPopup('This Leads Already Exist', data.existing_client || {});
+                            } else {
+                                showErrorToast('Error: ' + data.message);
+                            }
+                            this.innerHTML = '<i class="bi bi-person-plus me-1"></i>Yes, Create Lead';
+                            this.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showErrorToast('An error occurred. Please try again.');
+                        this.innerHTML = '<i class="bi bi-person-plus me-1"></i>Yes, Create Lead';
+                        this.disabled = false;
+                    });
+                };
+            }
+        });
+    });
+});
+
+function showDuplicateKnowledgeBasePopup(message, entry) {
+    document.getElementById('duplicateKnowledgeBaseModalBody').innerHTML = message;
+    const modal = new bootstrap.Modal(document.getElementById('duplicateKnowledgeBaseModal'));
+    modal.show();
+}
+
+function showDuplicateLeadPopup(message, client) {
+    document.getElementById('duplicateLeadModalBody').innerHTML = message;
+    const modal = new bootstrap.Modal(document.getElementById('duplicateLeadModal'));
+    modal.show();
+}
+
+function showClientExistsModal(data, messageId, button) {
+    // Populate client information
+    const clientData = data.client_data;
+    const accountData = data.account_data;
+    
+    let clientInfo = '<p class="text-muted">No additional information available</p>';
+    if (clientData && clientData.fields) {
+        const fields = clientData.fields;
+        clientInfo = `
+            <p><strong>Name:</strong> ${fields.Full_Name || 'N/A'}</p>
+            <p><strong>Email:</strong> ${fields.Email || 'N/A'}</p>
+            <p><strong>Phone:</strong> ${fields.Phone_Formatted || 'N/A'}</p>
+            <p><strong>Status:</strong> ${fields.Status || 'N/A'}</p>
+            <p><strong>Account:</strong> ${fields.Associated_Account || 'N/A'}</p>
+        `;
+    }
+    
+    let accountInfo = '<p class="text-muted">No account information available</p>';
+    if (accountData && accountData.fields) {
+        const fields = accountData.fields;
+        accountInfo = `
+            <p><strong>Company:</strong> ${fields.Company_Name || 'N/A'}</p>
+            <p><strong>Type:</strong> ${fields.Type || 'N/A'}</p>
+            <p><strong>State:</strong> ${fields.State_of_Formation || 'N/A'}</p>
+            <p><strong>Status:</strong> ${fields.Status || 'N/A'}</p>
+        `;
+    }
+    
+    document.getElementById('clientInfoDisplay').innerHTML = clientInfo;
+    document.getElementById('accountInfoDisplay').innerHTML = accountInfo;
+    
+    // Set up action buttons
+    document.getElementById('saveResponseBtn').onclick = () => handleClientAction('save_response', messageId, button);
+    document.getElementById('updateClientBtn').onclick = () => handleClientAction('update_existing_client', messageId, button);
+    document.getElementById('createLeadBtn').onclick = () => handleClientAction('create_lead', messageId, button);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('clientExistsModal'));
+    modal.show();
+}
+
+function showCreateClientModal(data, messageId, button) {
+    // Populate form with detected information
+    const clientInfo = data.client_info;
+    document.getElementById('clientName').value = clientInfo.name || '';
+    document.getElementById('clientContact').value = clientInfo.contact || '';
+    document.getElementById('clientMessage').value = clientInfo.message || '';
+    
+    // Set up create button
+    document.getElementById('confirmCreateClientBtn').onclick = () => {
+        const name = document.getElementById('clientName').value.trim();
+        const contact = document.getElementById('clientContact').value.trim();
+        const notes = document.getElementById('clientNotes').value.trim();
+        
+        if (!name) {
+            showErrorToast('Please enter a client name');
+            return;
+        }
+        
+        handleClientAction('create_new_client', messageId, button, {
+            name: name,
+            contact: contact,
+            notes: notes
+        });
+    };
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('createClientModal'));
+    modal.show();
+}
+
+function handleClientAction(action, messageId, button, additionalData = {}) {
+    // Show loading state
+    button.disabled = true;
+    button.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Processing...';
+    
+    // Prepare request data
+    const requestData = {
+        action: action,
+        ...additionalData
+    };
+    
+    // Send action request
+    fetch(`/messages/${messageId}/handle-client-action/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Close all modals
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            const bsModal = bootstrap.Modal.getInstance(modal);
+            if (bsModal) bsModal.hide();
+        });
+        
+        if (data.success) {
+            showSuccessToast(data.message);
+            button.classList.remove('btn-outline-accent');
+            button.classList.add('btn-success');
+            button.innerHTML = '<i class="bi bi-check me-1"></i>Saved';
+            // Keep button enabled so user can save again if needed
+            setTimeout(() => {
+                button.classList.remove('btn-success');
+                button.classList.add('btn-outline-accent');
+                button.innerHTML = '<i class="bi bi-database-add me-1"></i>Save to Airtable';
+                button.disabled = false;
+            }, 3000);
+        } else {
+            if (data.duplicate) {
+                showWarningToast(data.message);
+            } else {
+                showErrorToast('Error: ' + data.message);
+            }
+            button.innerHTML = '<i class="bi bi-database-add me-1"></i>Save to Airtable';
+            button.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showErrorToast('An error occurred while processing the request');
+        button.innerHTML = '<i class="bi bi-database-add me-1"></i>Save to Airtable';
+        button.disabled = false;
+    });
+}
+
+// showSearchResults function removed as search functionality was removed
+</script>
+
+<style>
+/* Root variables for consistent colors */
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3a0ca3;
+    --accent-color: #4cc9f0;
+    --success-color: #4ade80;
+    --warning-color: #fbbf24;
+    --danger-color: #ef4444;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+}
+
+.upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-area:hover {
+    border-color: var(--accent-color);
+    background-color: rgba(76, 201, 240, 0.05);
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.user-message, .ai-response {
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.user-message:hover, .ai-response:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.highlight-card {
+    animation: fadeIn 0.5s ease-out forwards;
+    box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.3);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.badge {
+    font-weight: 500;
+}
+
+/* Toast styling */
+.toast {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius);
+    min-width: 300px;
+    font-size: 1rem;
+}
+
+.toast-container {
+    z-index: 1100;
+}
+
+#confirmToast {
+    min-width: 350px;
+    background-color: #fff !important;
+    border-left: 4px solid var(--accent-color) !important;
+}
+
+#confirmToast .toast-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0.75rem 1rem;
+}
+
+#confirmToast .toast-body {
+    padding: 1rem;
+}
+
+#confirmToast .btn-accent {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+}
+
+#confirmToast .btn-accent:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+#successToast, #errorToast {
+    min-width: 300px;
+    font-weight: 500;
+    background: #4cc9f0 !important;
+}
+
+/* Enhanced UI styling */
+.text-accent {
+    color: var(--accent-color) !important;
+}
+
+.bg-accent {
+    background-color: var(--accent-color) !important;
+}
+
+.border-accent {
+    border-color: var(--accent-color) !important;
+}
+
+.btn-accent {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+}
+
+.btn-accent:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-outline-accent {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.btn-outline-accent:hover {
+    color: white;
+    background-color: var(--accent-color);
+}
+
+/* Card styling */
+.input-card {
+    border-top: 4px solid var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.response-card {
+    border-top: 4px solid var(--accent-color);
+}
+
+.card {
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* Form styling */
+.form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.25rem rgba(76, 201, 240, 0.25);
+}
+input#chat-search::placeholder {
+    color: #ffffff;
+}
+
+/* Button styling */
+.generate-btn {
+    background: #4cc9f0;
+    border: none;
+    box-shadow: 0 4px 6px rgba(67, 97, 238, 0.3);
+    transition: all 0.5s ease;
+}
+
+.generate-btn:hover {
+    background: #4cc9f0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(67, 97, 238, 0.4);
+}
+
+
+/* Modal styling */
+.modal-content {
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+</style>
+{% endblock %} 

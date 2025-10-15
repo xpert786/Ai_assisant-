@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{% block title %}AI Assistant{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --success-color: #4ade80;
+            --warning-color: #fbbf24;
+            --danger-color: #ef4444;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        html { height: -webkit-fill-available; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            /* Robust 100vh across iPhone Safari */
+            min-height: calc(var(--vh, 1vh) * 100);
+            min-height: 100dvh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container-fluid {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+        }
+        @media only screen and (min-width: 365px) and (max-width: 667px) {
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        }
+
+        @media only screen and (min-width: 365px) and (max-width: 667px) {
+        button.btn.btn-primary.btn-lg.generate-btn {
+        font-size: 16px;
+    }
+        }
+        .form-control {
+            border-radius: var(--border-radius);
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.15);
+        }
+        
+        .btn {
+            border-radius: var(--border-radius);
+            padding: 12px 24px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            box-shadow: 0 4px 6px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-accent {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-accent:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-outline-accent {
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
+        .btn-outline-accent:hover {
+            color: white;
+            background-color: var(--accent-color);
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .card-body {
+            padding: 24px;
+        }
+        
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+        
+        .app-header {
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .app-title {
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: #4cc9f0;
+            margin-bottom: 8px;
+        }
+        
+        .app-subtitle {
+            color: #64748b;
+            font-weight: 400;
+        }
+        
+        .alert {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Animation effects */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Toast styling */
+        .toast {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            min-width: 300px;
+            font-size: 1rem;
+        }
+
+        .toast-container {
+            z-index: 1100;
+        }
+
+        #confirmToast {
+            min-width: 350px;
+            background-color: #fff !important;
+            border-left: 4px solid var(--accent-color) !important;
+        }
+
+        #confirmToast .toast-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 0.75rem 1rem;
+        }
+
+        #confirmToast .toast-body {
+            padding: 1rem;
+        }
+        
+        /* Text and background colors */
+        .text-accent {
+            color: var(--accent-color) !important;
+        }
+        
+        .bg-accent {
+            background-color: var(--accent-color) !important;
+        }
+        
+        .border-accent {
+            border-color: var(--accent-color) !important;
+        }
+        
+        /* Modal styling */
+        .modal-content {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .modal-footer {
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Confirmation dialog styling */
+        .confirmation-dialog {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, 0);
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            z-index: 1050;
+            overflow: hidden;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .confirmation-dialog .dialog-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .confirmation-dialog .dialog-header h5 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .confirmation-dialog .dialog-header .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            line-height: 1;
+            padding: 0;
+            cursor: pointer;
+            color: #6b7280;
+            transition: var(--transition);
+        }
+        
+        .confirmation-dialog .dialog-header .close-btn:hover {
+            color: var(--dark-color);
+        }
+        
+        .confirmation-dialog .dialog-body {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .confirmation-dialog .dialog-footer {
+            padding: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+        
+        .confirmation-dialog .btn-cancel {
+            background-color: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .confirmation-dialog .btn-cancel:hover {
+            background-color: #4b5563;
+            transform: translateY(-2px);
+        }
+        
+        .confirmation-dialog .btn-confirm {
+            background: #4cc9f0;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .confirmation-dialog .btn-confirm:hover {
+            background: #4cc9f0;
+            transform: translateY(-2px);
+        }
+        
+        .dialog-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
+            animation: fadeIn 0.2s ease-out;
+        }
+        .ai-response-card {
+            display: flex;
+            flex-direction: row;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+            margin: 32px auto 0 auto;
+            max-width: 900px;
+            min-height: 220px;
+            overflow: hidden;
+        }
+        .ai-user-col {
+            flex: 0 0 38%;
+            background: #f7fafd;
+            padding: 32px 24px 32px 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid #e5e7eb;
+        }
+        .ai-bot-col {
+            flex: 1;
+            background: #eaf3ff;
+            padding: 32px 32px 32px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .ai-user-title {
+            font-weight: 600;
+            color: #38bdf8;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ai-user-msg {
+            color: #222;
+            font-size: 1.08rem;
+            margin-bottom: 0;
+            word-break: break-word;
+        }
+        .ai-bot-title {
+            font-weight: 600;
+            color: #2563eb;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ai-bot-msg {
+            color: #222;
+            font-size: 1.08rem;
+            background: #eaf3ff;
+            border-radius: 8px;
+            padding: 0;
+            margin-bottom: 0;
+            word-break: break-word;
+        }
+        @media (max-width: 900px) {
+            .ai-response-card { flex-direction: column; min-width: 0; }
+            .ai-user-col, .ai-bot-col { padding: 20px 12px; border: none; }
+            .ai-user-col { border-bottom: 1px solid #e5e7eb; border-right: none; }
+        }
+        .modal-dialog.modal-dialog-centered[style] {
+          top: 0 !important;
+          margin-top: 0 !important;
+          transform: translateY(0) !important;
+        }
+        /* Responsive layout adjustments */
+        /* Sidebar defaults for desktop remain as-is. For mobile, make it off-canvas */
+        #sidebarToggle { display: none; }
+        #sidebarOverlay { display: none; }
+        @media (max-width: 992px) {
+            /* Floating hamburger for small screens */
+            #sidebarToggle {
+                display: inline-flex;
+                position: fixed;
+                top: calc(env(safe-area-inset-top, 0px) + 12px);
+                left: calc(env(safe-area-inset-left, 0px) + 12px);
+                z-index: 1060;
+                align-items: center;
+                justify-content: center;
+                padding: 8px 10px;
+                border-radius: 8px;
+            }
+            /* Off-canvas sidebar */
+            #chat-sidebar {
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                height: 100dvh;
+                height: -webkit-fill-available;
+                width: 85%;
+                max-width: 320px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 1055;
+                -webkit-overflow-scrolling: touch;
+            }
+            #chat-sidebar.open { transform: translateX(0); }
+            /* Dim background when sidebar open */
+            #sidebarOverlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 1050;
+            }
+            #sidebarOverlay.show { display: block; }
+        }
+        /* Smooth scroll inertia on iOS */
+        #chat-sidebar ul { -webkit-overflow-scrolling: touch; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Mobile sidebar toggle button -->
+    <button id="sidebarToggle" class="btn btn-accent d-lg-none" aria-label="Toggle chat history">
+        <i class="bi bi-list"></i>
+    </button>
+    <div id="sidebarOverlay" class="d-lg-none" style="display:none;"></div>
+    <!-- Sidebar for Chat History (Professional, like ChatGPT) -->
+    <div style="display: flex; min-height: 100vh;">
+        <aside id="chat-sidebar" style="width: 270px; background: #ffffff; color: #fff; padding: 0; box-shadow: 2px 0 8px rgba(0,0,0,0.04); display: flex; flex-direction: column;">
+            <div style="padding: 24px 18px 10px 18px; border-bottom: 1px solid #292929;">
+                <!-- New Chat Button -->
+                <button id="new-chat-btn" style="width: 100%; background: #4cc9f0; border: none; color: white; padding: 12px; border-radius: 8px; font-size: 1rem; cursor: pointer; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;">
+                    <span style="font-size: 1.2rem; margin-right: 8px;">+</span>
+                    New Chat
+                </button>
+                <!-- Search Bar -->
+                <div style="display: flex; align-items: center; background: #000000; border-radius: 8px; padding: 8px 12px;">
+                    <i class="bi bi-search" style="font-size: 1.2rem; color: #bdbdbd;"></i>
+                    <input id="chat-search" type="text" placeholder="Search chats" style="background: transparent; border: none; outline: none; color: #fff; font-size: 1rem; margin-left: 10px; width: 100%; font-family: inherit;" />
+                </div>
+            </div>
+            <div style="padding: 18px 0 0 0; flex: 1; display: flex; flex-direction: column;">
+                <div style="padding: 0 24px 8px 24px; font-size: 1.02rem; color: #4cc9f0; font-weight: 600; letter-spacing: 0.5px;">Chats History</div>
+                <ul id="chat-history-list" style="list-style: none; margin: 0; padding: 0 0 0 0; flex: 1; overflow-y: auto;"></ul>
+            </div>
+        </aside>
+        <main style="flex: 1; min-width: 0;">
+            <div class="container-fluid py-4">
+                {% if messages %}
+                    <div class="messages mb-4">
+                        {% for message in messages %}
+                            {% if "deleted" not in message.message and "messages" not in message.message %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm fade-in" role="alert">
+                                <i class="bi bi-info-circle me-2"></i> {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <!-- Move the form here so it is always visible -->
+                {% if form %}
+                    <!-- Form removed as per user request -->
+                {% endif %}
+                <!-- The ONLY AI Response section. JS will update only this. -->
+                <div id="ai-response-section">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- End Sidebar/Main Layout -->
+    
+    <!-- Toast Notifications Container -->
+    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1100;">
+        <!-- Success Toast Template -->
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span id="successToastMessage">Operation successful</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        
+        <!-- Error Toast Template -->
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <span id="errorToastMessage">An error occurred</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        
+        <!-- Confirm Toast Template -->
+        <div id="confirmToast" class="toast align-items-center text-dark bg-light border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+            <div class="d-flex flex-column">
+                <div class="toast-header">
+                    <i class="bi bi-question-circle me-2 text-accent"></i>
+                    <strong class="me-auto">Confirmation</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    <p id="confirmToastMessage">Are you sure you want to proceed?</p>
+                    <div class="mt-2 pt-2 border-top d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="toast">Cancel</button>
+                        <button type="button" class="btn btn-accent" id="confirmToastBtn">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modern Confirmation Dialog Template -->
+    <div id="confirmationDialog" class="confirmation-dialog d-none">
+        <div class="dialog-header">
+            <h5><i class="bi bi-question-circle me-2 text-accent"></i> Confirmation</h5>
+            <button type="button" class="close-btn" id="closeConfirmDialog">&times;</button>
+        </div>
+        <div class="dialog-body">
+            <p id="confirmDialogMessage">Are you sure you want to save this response to Airtable?</p>
+        </div>
+        <div class="dialog-footer">
+            <button type="button" class="btn-cancel" id="cancelConfirmDialog">Cancel</button>
+            <button type="button" class="btn-confirm" id="confirmDialogBtn">Confirm</button>
+        </div>
+    </div>
+    <div id="dialogBackdrop" class="dialog-backdrop d-none"></div>
+
+    <!-- Bootstrap and jQuery JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Core JS -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // iOS 100vh fix: set --vh to window.innerHeight
+        function setVhUnit() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        setVhUnit();
+        window.addEventListener('resize', setVhUnit);
+        // Add fade-in animation to elements with .fade-in class
+        const fadeElements = document.querySelectorAll('.fade-in');
+        fadeElements.forEach(element => {
+            element.style.opacity = '0';
+            setTimeout(() => {
+                element.style.opacity = '1';
+                element.style.transform = 'translateY(0)';
+            }, 100);
+        });
+        // Sidebar toggle for mobile
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const chatSidebar = document.getElementById('chat-sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        function closeSidebar() {
+            chatSidebar && chatSidebar.classList.remove('open');
+            if (sidebarOverlay) {
+                sidebarOverlay.classList.remove('show');
+                sidebarOverlay.style.display = 'none';
+            }
+            document.body.classList.remove('sidebar-open');
+        }
+        if (sidebarToggle && chatSidebar && sidebarOverlay) {
+            sidebarToggle.addEventListener('click', function() {
+                const willOpen = !chatSidebar.classList.contains('open');
+                chatSidebar.classList.toggle('open');
+                sidebarOverlay.style.display = willOpen ? 'block' : 'none';
+                sidebarOverlay.classList.toggle('show', willOpen);
+                document.body.classList.toggle('sidebar-open', willOpen);
+            });
+            sidebarOverlay.addEventListener('click', closeSidebar);
+            // Close on ESC
+            document.addEventListener('keydown', function(e){
+                if (e.key === 'Escape') closeSidebar();
+            });
+        }
+        
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(alert) {
+                if (alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            });
+        }, 5000);
+        
+        // Modern confirmation dialog functionality
+        window.showConfirmDialog = function(message, callback) {
+            const dialog = document.getElementById('confirmationDialog');
+            const backdrop = document.getElementById('dialogBackdrop');
+            const messageEl = document.getElementById('confirmDialogMessage');
+            const confirmBtn = document.getElementById('confirmDialogBtn');
+            const cancelBtn = document.getElementById('cancelConfirmDialog');
+            const closeBtn = document.getElementById('closeConfirmDialog');
+            
+            // Set message
+            messageEl.textContent = message;
+            
+            // Show dialog and backdrop
+            dialog.classList.remove('d-none');
+            backdrop.classList.remove('d-none');
+            
+            // Handle confirm button
+            const handleConfirm = function() {
+                dialog.classList.add('d-none');
+                backdrop.classList.add('d-none');
+                confirmBtn.removeEventListener('click', handleConfirm);
+                cancelBtn.removeEventListener('click', handleCancel);
+                closeBtn.removeEventListener('click', handleCancel);
+                callback(true);
+            };
+            
+            // Handle cancel button
+            const handleCancel = function() {
+                dialog.classList.add('d-none');
+                backdrop.classList.add('d-none');
+                confirmBtn.removeEventListener('click', handleConfirm);
+                cancelBtn.removeEventListener('click', handleCancel);
+                closeBtn.removeEventListener('click', handleCancel);
+                callback(false);
+            };
+            
+            // Add event listeners
+            confirmBtn.addEventListener('click', handleConfirm);
+            cancelBtn.addEventListener('click', handleCancel);
+            closeBtn.addEventListener('click', handleCancel);
+            
+            // Close on ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !dialog.classList.contains('d-none')) {
+                    handleCancel();
+                }
+            });
+        };
+
+        // Duplicate company popup functionality
+        window.showDuplicateCompanyPopup = function(message, existingCompanies) {
+            const dialog = document.getElementById('confirmationDialog');
+            const backdrop = document.getElementById('dialogBackdrop');
+            const messageEl = document.getElementById('confirmDialogMessage');
+            const confirmBtn = document.getElementById('confirmDialogBtn');
+            const cancelBtn = document.getElementById('cancelConfirmDialog');
+            const closeBtn = document.getElementById('closeConfirmDialog');
+            
+            // Set message with company details
+            let fullMessage = message;
+            if (existingCompanies && existingCompanies.length > 0) {
+                fullMessage += '\n\nExisting companies:\n' + existingCompanies.join('\n');
+            }
+            messageEl.textContent = fullMessage;
+            
+            // Change button text to "OK"
+            confirmBtn.textContent = 'OK';
+            cancelBtn.style.display = 'none';
+            
+            // Show dialog and backdrop
+            dialog.classList.remove('d-none');
+            backdrop.classList.remove('d-none');
+            
+            // Handle OK button
+            const handleOK = function() {
+                dialog.classList.add('d-none');
+                backdrop.classList.add('d-none');
+                confirmBtn.removeEventListener('click', handleOK);
+                closeBtn.removeEventListener('click', handleOK);
+                // Reset button text
+                confirmBtn.textContent = 'Confirm';
+                cancelBtn.style.display = 'block';
+            };
+            
+            // Add event listeners
+            confirmBtn.addEventListener('click', handleOK);
+            closeBtn.addEventListener('click', handleOK);
+            
+            // Close on ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !dialog.classList.contains('d-none')) {
+                    handleOK();
+                }
+            });
+        };
+    });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+    <script>
+    // Sidebar chat history logic with search
+    let allChats = [];
+    function renderChatList(filter = "") {
+        const list = document.getElementById('chat-history-list');
+        list.innerHTML = '';
+        let filtered = allChats;
+        if (filter.trim()) {
+            filtered = allChats.filter(chat => (chat.content || '').toLowerCase().includes(filter.toLowerCase()));
+        }
+        if (filtered.length) {
+            filtered.forEach(chat => {
+                const li = document.createElement('li');
+                li.style.cursor = 'pointer';
+                li.style.padding = '12px 24px';
+                li.style.borderRadius = '6px';
+                li.style.margin = '0 8px 2px 8px';
+                li.style.fontSize = '1rem';
+                li.style.color = '#4b5563';
+                li.style.transition = 'background 0.18s, color 0.18s';
+                li.classList.add('chat-list-item');
+                li.innerHTML = `
+                    <span class="chat-content">${chat.content ? chat.content.substring(0, 40) : 'Image'}</span>
+                    <div class="dropdown chat-menu-dropdown" style="float:right;position:relative;">
+                        <button class="btn btn-link btn-sm chat-menu-btn" style="color:#4b5563;padding:0 8px;" tabindex="-1">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu" style="display:none;position:absolute;right:0;top:24px;min-width:120px;background:#232323;border-radius:8px;padding:6px 0;box-shadow:0 2px 8px rgba(0,0,0,0.18);z-index:1001;">
+                            <li><button class="dropdown-item chat-edit-item" style="color:#4cc9f0;padding:6px 18px;width:100%;text-align:left;background:none;border:none;">Rename</button></li>
+                            <li><button class="dropdown-item chat-delete-item" style="color:#ef4444;padding:6px 18px;width:100%;text-align:left;background:none;border:none;">Delete</button></li>
+                        </ul>
+                    </div>
+                `;
+                // Main click (open chat)
+                li.onclick = (e) => {
+                    if (e.target.closest('.chat-menu-btn') || e.target.closest('.dropdown-menu')) return;
+                    if (e) e.preventDefault();
+                    window.location.href = `/?message_id=${chat.id}`;
+                };
+                // 3-dots menu logic
+                const menuBtn = li.querySelector('.chat-menu-btn');
+                const dropdown = li.querySelector('.dropdown-menu');
+                menuBtn.onclick = function(ev) {
+                    ev.stopPropagation();
+                    // Close other open menus
+                    document.querySelectorAll('.chat-menu-dropdown .dropdown-menu').forEach(el => {
+                        if (el !== dropdown) el.style.display = 'none';
+                    });
+                    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                };
+                // Hide menu on click outside
+                document.addEventListener('click', function hideMenu(e) {
+                    if (!li.contains(e.target)) dropdown.style.display = 'none';
+                });
+                // Edit click
+                dropdown.querySelector('.chat-edit-item').onclick = function(e) {
+                    e.preventDefault();
+                    const chatContent = li.querySelector('.chat-content');
+                    const currentText = chatContent.innerText;
+                    
+                    // Create an input field
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = currentText;
+                    input.className = 'chat-edit-input';
+                    input.style.width = '100%';
+                    input.style.padding = '8px';
+                    input.style.border = '1px solid #4cc9f0';
+                    input.style.borderRadius = '4px';
+                    
+                    // Replace the text with input
+                    chatContent.innerHTML = '';
+                    chatContent.appendChild(input);
+                    input.focus();
+                    
+                    // Function to save changes
+                    function saveChanges(newText) {
+                        fetch(`/messages/${chat.id}/update/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCSRFToken(),
+                            },
+                            body: JSON.stringify({
+                                content: newText
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                chatContent.innerHTML = newText;
+                            } else {
+                                alert('Failed to save changes');
+                                chatContent.innerHTML = currentText;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Failed to save changes');
+                            chatContent.innerHTML = currentText;
+                        });
+                        dropdown.style.display = 'none';
+                    }
+
+                    // Handle save on enter
+                    input.addEventListener('keypress', function(event) {
+                        if (event.key === 'Enter') {
+                            saveChanges(input.value);
+                        }
+                    });
+                    
+                    // Handle save on blur
+                    input.addEventListener('blur', function() {
+                        saveChanges(input.value);
+                    });
+                };
+                // Delete click
+                dropdown.querySelector('.chat-delete-item').onclick = function(e) {
+                    e.preventDefault();
+                    showDeleteConfirmDialog({
+                        onConfirm: function() {
+                            console.log('Sending delete request...');
+                            fetch(`/messages/${chat.id}/delete/`, { method: 'POST', headers: { 'X-CSRFToken': getCSRFToken() } })
+                                .then(async res => {
+                                    const text = await res.text();
+                                    console.log('Raw response:', text);
+                                    try {
+                                        const data = JSON.parse(text);
+                                        console.log('Parsed JSON:', data);
+                                        if (data.success) {
+                                            loadChatHistory();
+                                            showSuccessToast('History deleted successfully');
+                                        } else {
+                                            showErrorToast('Failed to delete chat.');
+                                        }
+                                    } catch (err) {
+                                        console.error('JSON parse error:', err);
+                                        showErrorToast('Server error: ' + text);
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error('Fetch error:', err);
+                                    showErrorToast('Network error: ' + err);
+                                });
+                        }
+                    });
+                };
+                list.appendChild(li);
+            });
+        } else {
+            const li = document.createElement('li');
+            li.textContent = 'No chats yet.';
+            li.style.padding = '16px 24px';
+            li.style.color = '#aaa';
+            list.appendChild(li);
+        }
+    }
+    function loadChatHistory() {
+        fetch('/chat-history/')
+            .then(res => res.json())
+            .then(data => {
+                allChats = data.history || [];
+                renderChatList(document.getElementById('chat-search').value || "");
+            });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        loadChatHistory();
+        
+        // New Chat button click handler
+        document.getElementById('new-chat-btn').addEventListener('click', function() {
+            // Clear any existing content and reset the form
+            const messageForm = document.getElementById('messageForm');
+            if (messageForm) {
+                const textarea = messageForm.querySelector('textarea');
+                if (textarea) textarea.value = '';
+                
+                const imagePreview = document.getElementById('imagePreview');
+                if (imagePreview) imagePreview.classList.add('d-none');
+                
+                const imageInput = messageForm.querySelector('input[type="file"]');
+                if (imageInput) imageInput.value = '';
+            }
+            
+            // Clear the AI response section and show only the input form
+            const aiResponseSection = document.getElementById('ai-response-section');
+            if (aiResponseSection) {
+                aiResponseSection.innerHTML = `
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-lg-10">
+                            <!-- Input Section -->
+                            <div class="card border-0 shadow-sm fade-in mb-4 input-card">
+                                <div class="card-body p-4 p-md-5">
+                                    <form method="post" action="/messages/create/" enctype="multipart/form-data" id="messageForm">
+                                        <input type="hidden" name="csrfmiddlewaretoken" value="${getCSRFToken()}">
+                                        
+                                        <div class="row g-4">
+                                            <div class="col-md-6">
+                                                <div class="message-input-container">
+                                                    <label for="content" class="form-label fs-5 mb-3">
+                                                        <i class="bi bi-chat-left-text me-2 text-accent"></i>Enter Message
+                                                    </label>
+                                                    <div class="position-relative">
+                                                        <textarea name="content" rows="3" class="form-control" placeholder="Type or paste your message here..."></textarea>
+                                                        <small class="text-muted d-block mt-2">Paste your message here</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="upload-container">
+                                                    <label for="image" class="form-label fs-5 mb-3">
+                                                        <i class="bi bi-image me-2 text-accent"></i>Upload Screenshot
+                                                    </label>
+                                                    <div class="position-relative">
+                                                        <div class="upload-area p-4 text-center border rounded mb-2" id="uploadArea">
+                                                            <i class="bi bi-cloud-arrow-up display-4 text-accent mb-2"></i>
+                                                            <p class="mb-0">Drop your image here or click to browse</p>
+                                                        </div>
+                                                        <div class="position-absolute" style="top: 0; left: 0; right: 0; bottom: 0; opacity: 0;">
+                                                            <input type="file" name="image" accept="image/*" style="width: 100%; height: 100%;">
+                                                        </div>
+                                                        <div id="imagePreview" class="mt-2 text-center d-none">
+                                                            <img src="" alt="Preview" class="img-fluid rounded" style="max-height: 150px;">
+                                                            <button type="button" class="btn btn-sm btn-outline-danger mt-2" id="removeImage">
+                                                                <i class="bi bi-x"></i> Remove
+                                                            </button>
+                                                        </div>
+                                                        <small class="text-muted d-block mt-2">Upload a screenshot of conversation</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-grid mt-4">
+                                            <button type="submit" class="btn btn-primary btn-lg generate-btn">
+                                                <i class="bi bi-lightning-charge me-2"></i> Generate AI Response
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Set up image preview functionality
+                const imageInput = aiResponseSection.querySelector('input[type="file"]');
+                const imagePreview = aiResponseSection.querySelector('#imagePreview');
+                const previewImg = imagePreview.querySelector('img');
+                const removeImageBtn = aiResponseSection.querySelector('#removeImage');
+                const uploadArea = aiResponseSection.querySelector('#uploadArea');
+
+                if (imageInput && imagePreview && previewImg && removeImageBtn && uploadArea) {
+                    imageInput.addEventListener('change', function(e) {
+                        if (this.files && this.files[0]) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                previewImg.src = e.target.result;
+                                imagePreview.classList.remove('d-none');
+                                uploadArea.classList.add('d-none');
+                            };
+                            reader.readAsDataURL(this.files[0]);
+                        }
+                    });
+
+                    removeImageBtn.addEventListener('click', function() {
+                        imageInput.value = '';
+                        imagePreview.classList.add('d-none');
+                        uploadArea.classList.remove('d-none');
+                    });
+
+                    // Handle drag and drop
+                    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                        uploadArea.addEventListener(eventName, preventDefaults, false);
+                    });
+
+                    function preventDefaults(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+
+                    ['dragenter', 'dragover'].forEach(eventName => {
+                        uploadArea.addEventListener(eventName, highlight, false);
+                    });
+
+                    ['dragleave', 'drop'].forEach(eventName => {
+                        uploadArea.addEventListener(eventName, unhighlight, false);
+                    });
+
+                    function highlight() {
+                        uploadArea.classList.add('border-accent');
+                    }
+
+                    function unhighlight() {
+                        uploadArea.classList.remove('border-accent');
+                    }
+
+                    uploadArea.addEventListener('drop', handleDrop, false);
+
+                    function handleDrop(e) {
+                        const dt = e.dataTransfer;
+                        const files = dt.files;
+                        
+                        if (files.length) {
+                            imageInput.files = files;
+                            const event = new Event('change');
+                            imageInput.dispatchEvent(event);
+                        }
+                    }
+
+                    uploadArea.addEventListener('click', () => {
+                        imageInput.click();
+                    });
+                }
+
+                // Set up form validation
+                const form = aiResponseSection.querySelector('#messageForm');
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        const contentInput = form.querySelector('textarea[name="content"]');
+                        const imageInput = form.querySelector('input[type="file"]');
+                        
+                        if (!contentInput.value.trim() && !imageInput.files.length) {
+                            e.preventDefault();
+                            showErrorToast('Please enter a message OR upload a screenshot (or both)');
+                        } else {
+                            const submitBtn = form.querySelector('button[type="submit"]');
+                            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Generating...';
+                            submitBtn.disabled = true;
+                        }
+                    });
+                }
+            }
+            
+            // Reset URL without reloading the page
+            history.pushState({}, '', '/');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        });
+
+        // Search functionality
+        document.getElementById('chat-search').addEventListener('input', function(e) {
+            renderChatList(e.target.value);
+        });
+    });
+    // Helper to get CSRF token
+    function getCSRFToken() {
+        const name = 'csrftoken';
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const c = cookies[i].trim();
+            if (c.startsWith(name + '=')) {
+                return decodeURIComponent(c.substring(name.length + 1));
+            }
+        }
+        return '';
+    }
+    // Show custom confirmation dialog for delete
+    function showDeleteConfirmDialog({onConfirm}) {
+        const dialog = document.getElementById('confirmationDialog');
+        const msg = document.getElementById('confirmDialogMessage');
+        msg.textContent = 'This will delete ChatGPT Airtable Integration.?';
+        dialog.classList.remove('d-none');
+        // Button references
+        const cancelBtn = document.getElementById('cancelConfirmDialog');
+        const closeBtn = document.getElementById('closeConfirmDialog');
+        const confirmBtn = dialog.querySelector('.btn-confirm') || createConfirmBtn();
+        // Remove old listeners
+        confirmBtn.onclick = null;
+        cancelBtn.onclick = null;
+        closeBtn.onclick = null;
+        // Confirm
+        confirmBtn.onclick = function() {
+            dialog.classList.add('d-none');
+            if (onConfirm) onConfirm();
+        };
+        // Cancel/close
+        cancelBtn.onclick = closeBtn.onclick = function() {
+            dialog.classList.add('d-none');
+        };
+    }
+    // Helper to ensure confirm button exists
+    function createConfirmBtn() {
+        const dialog = document.getElementById('confirmationDialog');
+        let btn = dialog.querySelector('.btn-confirm');
+        if (!btn) {
+            btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn-confirm';
+            btn.textContent = 'Delete';
+            dialog.querySelector('.dialog-footer').appendChild(btn);
+        }
+        return btn;
+    }
+    // Show success toast
+    function showSuccessToast(msg) {
+        const toast = document.getElementById('successToast');
+        const msgSpan = document.getElementById('successToastMessage');
+        msgSpan.textContent = msg;
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+    }
+    // Show error toast
+    function showErrorToast(msg) {
+        const toast = document.getElementById('errorToast');
+        const msgSpan = document.getElementById('errorToastMessage');
+        msgSpan.textContent = msg;
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+    }
+    </script>
+</body>

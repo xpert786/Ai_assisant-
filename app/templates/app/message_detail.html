@@ -1,0 +1,401 @@
+{% extends "app/base.html" %}
+
+{% block title %}AI Assistant{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center">
+                <h3 class="fs-5 mb-0 text-primary">
+                    <i class="bi bi-robot me-2"></i>AI Assistant
+                </h3>
+                <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-house me-1"></i> Home
+                </a>
+            </div>
+            
+            <div class="card-body p-0">
+                <!-- Chat Messages Area -->
+                <div id="chat-messages" class="p-4 chat-messages">
+                    <!-- Initial user message - HIDDEN -->
+                    <!-- Removed original message display as requested -->
+                    
+                    <!-- Initial AI response -->
+                    <div class="ai-response">
+                        <h6 class="mb-2 text-primary">
+                            <i class="bi bi-robot me-2"></i>AI Assistant
+                        </h6>
+                        <div id="initial-response" class="ai-response-content">
+                            {{ message.final_response|default:message.ai_response|linebreaksbr }}
+                        </div>
+                    </div>
+                    
+                    <!-- Additional messages will be added here dynamically -->
+                </div>
+                
+                <!-- Input Area -->
+                <div class="chat-input-area">
+                    <form id="chat-form" class="d-flex">
+                        {% csrf_token %}
+                        <input type="hidden" name="message_id" value="{{ message.id }}">
+                        <div class="flex-grow-1 me-2">
+                            <textarea id="user-input" class="form-control" rows="1" placeholder="Type your message here... (Supports multiple languages)"></textarea>
+                            <div class="form-text text-end">
+                                <small class="text-muted">Real-time AI responses with language detection</small>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <button type="button" id="send-button" class="btn btn-primary mb-2" style="height: fit-content;">
+                                <i class="bi bi-send"></i> Send
+                            </button>
+                            <button type="button" id="stream-button" class="btn btn-outline-info btn-sm" style="height: fit-content;">
+                                <i class="bi bi-lightning"></i> Stream
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chat-form');
+    const sendButton = document.getElementById('send-button');
+    const streamButton = document.getElementById('stream-button');
+    const chatMessages = document.getElementById('chat-messages');
+    const userInput = document.getElementById('user-input');
+    
+    let conversationHistory = [];
+    let isProcessing = false;
+    
+    // Auto-scroll to bottom of chat
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Initialize by scrolling to bottom
+    scrollToBottom();
+    
+    // Add a new message to the chat
+    function addMessage(sender, content, isStreaming = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = sender === 'user' ? 
+            'user-message p-3 bg-light rounded mb-3' : 
+            'ai-response p-3 bg-primary bg-opacity-10 rounded mb-3';
+            
+        const header = document.createElement('h6');
+        header.className = 'mb-2 text-primary';
+        header.innerHTML = sender === 'user' ? 
+            '<i class="bi bi-person-circle me-2"></i>You' : 
+            '<i class="bi bi-robot me-2"></i>AI Assistant';
+            
+        const text = document.createElement('div');
+        text.innerHTML = content;
+        
+        messageDiv.appendChild(header);
+        messageDiv.appendChild(text);
+        chatMessages.appendChild(messageDiv);
+        
+        scrollToBottom();
+        
+        // Add to conversation history
+        if (sender === 'user') {
+            conversationHistory.push({
+                role: 'user',
+                content: content,
+                timestamp: new Date().toISOString()
+            });
+        } else {
+            conversationHistory.push({
+                role: 'assistant',
+                content: content,
+                timestamp: new Date().toISOString()
+            });
+        }
+    }
+    
+    // Add loading indicator
+    function addLoadingIndicator() {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'ai-response p-3 bg-primary bg-opacity-10 rounded mb-3';
+        loadingDiv.id = 'loading-indicator';
+        
+        const header = document.createElement('h6');
+        header.className = 'mb-2 text-primary';
+        header.innerHTML = '<i class="bi bi-robot me-2"></i>AI Assistant';
+        
+        const spinner = document.createElement('div');
+        spinner.className = 'd-flex align-items-center';
+        spinner.innerHTML = '<div class="spinner-grow spinner-grow-sm text-primary me-2" role="status"></div><span>Thinking...</span>';
+        
+        loadingDiv.appendChild(header);
+        loadingDiv.appendChild(spinner);
+        chatMessages.appendChild(loadingDiv);
+        
+        scrollToBottom();
+    }
+    
+    // Remove loading indicator
+    function removeLoadingIndicator() {
+        const loadingIndicator = document.getElementById('loading-indicator');
+        if (loadingIndicator) {
+            loadingIndicator.remove();
+        }
+    }
+    
+    // Process the message (regular response)
+    function processMessage() {
+        const message = userInput.value.trim();
+        if (!message || isProcessing) return;
+        
+        isProcessing = true;
+        
+        // Add user message to chat
+        addMessage('user', message);
+        
+        // Clear input
+        userInput.value = '';
+        userInput.style.height = 'auto';
+        
+        // Show loading indicator
+        addLoadingIndicator();
+        
+        // Disable buttons
+        sendButton.disabled = true;
+        streamButton.disabled = true;
+        sendButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+        
+        // Send to real-time chat endpoint
+        fetch('/api/real-time-chat/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                message: message,
+                conversation_history: conversationHistory.slice(-10) // Keep last 10 messages for context
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            removeLoadingIndicator();
+            
+            if (data.success) {
+                addMessage('ai', data.response);
+            } else {
+                addMessage('ai', 'Sorry, there was an error: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            removeLoadingIndicator();
+            console.error('Error:', error);
+            addMessage('ai', 'Sorry, there was a network error. Please try again.');
+        })
+        .finally(() => {
+            isProcessing = false;
+            sendButton.disabled = false;
+            streamButton.disabled = false;
+            sendButton.innerHTML = '<i class="bi bi-send"></i> Send';
+        });
+    }
+    
+    // Process the message (streaming response)
+    function processMessageStream() {
+        const message = userInput.value.trim();
+        if (!message || isProcessing) return;
+        
+        isProcessing = true;
+        
+        // Add user message to chat
+        addMessage('user', message);
+        
+        // Clear input
+        userInput.value = '';
+        userInput.style.height = 'auto';
+        
+        // Disable buttons
+        sendButton.disabled = true;
+        streamButton.disabled = true;
+        streamButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+        
+        // Create streaming response container
+        const streamingDiv = document.createElement('div');
+        streamingDiv.className = 'ai-response p-3 bg-primary bg-opacity-10 rounded mb-3';
+        streamingDiv.id = 'streaming-response';
+        
+        const header = document.createElement('h6');
+        header.className = 'mb-2 text-primary';
+        header.innerHTML = '<i class="bi bi-robot me-2"></i>AI Assistant';
+        
+        const text = document.createElement('div');
+        text.id = 'streaming-text';
+        text.innerHTML = '<span class="text-muted">AI is typing...</span>';
+        
+        streamingDiv.appendChild(header);
+        streamingDiv.appendChild(text);
+        chatMessages.appendChild(streamingDiv);
+        
+        scrollToBottom();
+        
+        // Start streaming
+        const eventSource = new EventSource('/api/stream-ai-response/');
+        
+        // Send the message via POST first
+        fetch('/api/stream-ai-response/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                message: message,
+                conversation_history: conversationHistory.slice(-10)
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Stream request failed');
+            }
+            
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let fullResponse = '';
+            
+            function readStream() {
+                return reader.read().then(({ done, value }) => {
+                    if (done) {
+                        // Add final response to conversation history
+                        conversationHistory.push({
+                            role: 'assistant',
+                            content: fullResponse,
+                            timestamp: new Date().toISOString()
+                        });
+                        
+                        isProcessing = false;
+                        sendButton.disabled = false;
+                        streamButton.disabled = false;
+                        streamButton.innerHTML = '<i class="bi bi-lightning"></i> Stream';
+                        return;
+                    }
+                    
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.slice(6));
+                                
+                                if (data.type === 'content') {
+                                    fullResponse += data.content;
+                                    text.innerHTML = formatMessage(fullResponse);
+                                    scrollToBottom();
+                                } else if (data.type === 'complete') {
+                                    fullResponse = data.content;
+                                    text.innerHTML = formatMessage(fullResponse);
+                                    scrollToBottom();
+                                } else if (data.type === 'error') {
+                                    text.innerHTML = '<span class="text-danger">Error: ' + data.content + '</span>';
+                                }
+                            } catch (e) {
+                                console.error('Error parsing stream data:', e);
+                            }
+                        }
+                    }
+                    
+                    return readStream();
+                });
+            }
+            
+            return readStream();
+        })
+        .catch(error => {
+            console.error('Streaming error:', error);
+            text.innerHTML = '<span class="text-danger">Sorry, there was an error with streaming. Please try again.</span>';
+            
+            isProcessing = false;
+            sendButton.disabled = false;
+            streamButton.disabled = false;
+            streamButton.innerHTML = '<i class="bi bi-lightning"></i> Stream';
+        });
+    }
+    
+    function formatMessage(content) {
+        // Simple markdown-like formatting
+        return content
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\n/g, '<br>')
+            .replace(/`(.*?)`/g, '<code>$1</code>');
+    }
+    
+    // Handle send button click
+    sendButton.addEventListener('click', processMessage);
+    
+    // Handle stream button click
+    streamButton.addEventListener('click', processMessageStream);
+    
+    // Handle form submission (Enter key)
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        processMessage();
+    });
+    
+    // Handle Enter key (without Shift)
+    userInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            processMessage();
+        }
+    });
+    
+    // Auto-resize textarea as user types
+    userInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+});
+</script>
+
+<style>
+.ai-response-content {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 8px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.ai-response-content p {
+    margin-bottom: 12px;
+}
+
+.ai-response-content p:last-child {
+    margin-bottom: 0;
+}
+
+.chat-messages {
+    background: #ffffff;
+    min-height: 400px;
+}
+
+.ai-response {
+    margin-bottom: 20px;
+}
+
+.ai-response h6 {
+    color: #2563eb;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,11 @@
+[2025-10-06 10:35:01 +0000] [300072] [INFO] Starting gunicorn 23.0.0
+[2025-10-06 10:35:01 +0000] [300072] [INFO] Listening at: unix:/home/ubuntu/Ai_Project/gunicorn.sock (300072)
+[2025-10-06 10:35:01 +0000] [300072] [INFO] Using worker: sync
+[2025-10-06 10:35:01 +0000] [300073] [INFO] Booting worker with pid: 300073
+[2025-10-06 10:35:01 +0000] [300074] [INFO] Booting worker with pid: 300074
+[2025-10-06 10:35:01 +0000] [300075] [INFO] Booting worker with pid: 300075
+[2025-10-06 10:36:32 +0000] [300072] [INFO] Handling signal: int
+[2025-10-06 10:36:32 +0000] [300074] [INFO] Worker exiting (pid: 300074)
+[2025-10-06 10:36:32 +0000] [300073] [INFO] Worker exiting (pid: 300073)
+[2025-10-06 10:36:32 +0000] [300075] [INFO] Worker exiting (pid: 300075)
+[2025-10-06 10:36:32 +0000] [300072] [INFO] Shutting down: Master
