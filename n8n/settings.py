@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +29,9 @@ SECRET_KEY = 'django-insecure-8qk#h!u$)xe7)t^9%jill5@=vza$x2c2ujjp7zdof7o28hy%-8
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+AIRTABLE_API_KEY = os.getenv('AIRTABLE_API_KEY')
+AIRTABLE_BASE_ID = os.getenv('AIRTABLE_BASE_ID')
 
 # Application definition
 

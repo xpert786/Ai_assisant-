@@ -20,7 +20,7 @@ from .models import Message
 
 from .models import Message, OpenAIConfig
 from .forms import MessageForm, ResponseEditForm
-from .utils import AIClient, AirtableClient
+from .utils import AIClient, AirtableClient, USING_OPENAI_V1
 
 import numpy as np
 from PIL import Image
@@ -29,6 +29,23 @@ import openai
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.core.files.uploadedfile import InMemoryUploadedFile
+
+# PDF generation imports
+try:
+    from reportlab.lib.pagesizes import letter
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.lib import colors
+except ImportError:
+    # Fallback for systems without reportlab
+    SimpleDocTemplate = None
+    Paragraph = None
+    Spacer = None
+    getSampleStyleSheet = None
+    ParagraphStyle = None
+    inch = None
+    colors = None
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -884,17 +901,6 @@ class MessageDetailView(DetailView):
         }
         
         # Add AI response for new messages
-        
-# Prefer the AI response (final_response if available, else ai_response)
-        if message.final_response:
-            fields['Message'] = message.final_response
-        elif message.ai_response:
-            fields['Message'] = message.ai_response   # yahan galti thi
-        elif message.extracted_content:
-            fields['Message'] = message.extracted_content
-
-
-        
         return context
 
 @csrf_exempt
@@ -1759,82 +1765,9 @@ def real_time_chat(request):
 
 
 def detect_language(text):
-    """Enhanced language detection based on common patterns and linguistic features"""
-    if not text or not text.strip():
-        return 'English'
-    
-    text_lower = text.lower().strip()
-    
-    # Italian indicators - more comprehensive
-    italian_words = [
-        'ciao', 'grazie', 'prego', 'buongiorno', 'buonasera', 'buonanotte',
-        'come', 'stai', 'bene', 'male', 'perfetto', 'ottimo', 'eccellente',
-        'scusi', 'mi dispiace', 'arrivederci', 'salve', 'piacere', 'conosci',
-        'parlare', 'capire', 'aiutare', 'lavoro', 'casa', 'famiglia',
-        'italiano', 'italia', 'roma', 'milano', 'napoli', 'firenze',
-        'grazie mille', 'per la', 'per il', 'molto', 'molta', 'mille'
-    ]
-    
-    # Spanish indicators - more comprehensive
-    spanish_words = [
-        'hola', 'gracias', 'por favor', 'buenos días', 'buenas tardes', 'buenas noches',
-        'como', 'estas', 'bien', 'mal', 'perfecto', 'excelente', 'muy bien',
-        'disculpe', 'lo siento', 'hasta luego', 'saludos', 'gusto', 'conocer',
-        'hablar', 'entender', 'ayudar', 'trabajo', 'casa', 'familia',
-        'español', 'españa', 'madrid', 'barcelona', 'mexico', 'argentina',
-        'muchas gracias', 'por tu', 'por su', 'muy', 'más'
-    ]
-    
-    # Portuguese indicators - more comprehensive
-    portuguese_words = [
-        'olá', 'obrigado', 'obrigada', 'por favor', 'bom dia', 'boa tarde', 'boa noite',
-        'como', 'está', 'bem', 'mal', 'perfeito', 'excelente', 'muito bem',
-        'desculpe', 'sinto muito', 'até logo', 'saudações', 'prazer', 'conhecer',
-        'falar', 'entender', 'ajudar', 'trabalho', 'casa', 'família',
-        'português', 'portugal', 'brasil', 'lisboa', 'porto', 'rio de janeiro'
-    ]
-    
-    # Count matches for each language
-    italian_count = sum(1 for word in italian_words if word in text_lower)
-    spanish_count = sum(1 for word in spanish_words if word in text_lower)
-    portuguese_count = sum(1 for word in portuguese_words if word in text_lower)
-    
-    # Check for specific linguistic patterns
-    # Italian patterns
-    if 'ch' in text_lower and ('che' in text_lower or 'chi' in text_lower):
-        italian_count += 2
-    if text_lower.endswith(('zione', 'sione', 'tore', 'tori')):
-        italian_count += 2
-    
-    # Spanish patterns
-    if 'ñ' in text_lower or 'll' in text_lower:
-        spanish_count += 2
-    if text_lower.endswith(('ción', 'sión', 'mente')):
-        spanish_count += 2
-    
-    # Portuguese patterns
-    if 'ã' in text_lower or 'õ' in text_lower or 'ç' in text_lower:
-        portuguese_count += 2
-    if text_lower.endswith(('ção', 'são', 'mente')):
-        portuguese_count += 2
-    
-    # English indicators - add some common English words
-    english_words = [
-        'hello', 'hi', 'thank you', 'thanks', 'please', 'good morning', 'good afternoon',
-        'how are you', 'fine', 'well', 'help', 'work', 'home', 'family', 'name',
-        'english', 'england', 'america', 'london', 'new york', 'very much', 'for your'
-    ]
-    english_count = sum(1 for word in english_words if word in text_lower)
-    
-    # Return language with highest count, default to English
-    if italian_count > spanish_count and italian_count > portuguese_count and italian_count > english_count:
-        return 'Italian'
-    elif spanish_count > portuguese_count and spanish_count > english_count:
-        return 'Spanish'
-    elif portuguese_count > english_count:
-        return 'Portuguese'
-    else:
-        return 'English'
+    """Detect language using OpenAI for accurate results"""
+    ai_client = AIClient()
+    return ai_client.detect_language_openai(text)
 
 
 def real_time_chat_view(request):

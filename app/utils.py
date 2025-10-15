@@ -31,7 +31,8 @@ logger = logging.getLogger(__name__)
 
 # Check OpenAI version
 try:
-    openai_version = pkg_resources.get_distribution("openai").version
+    from importlib.metadata import version as get_version
+    openai_version = get_version("openai")
     USING_OPENAI_V1 = int(openai_version.split('.')[0]) >= 1
 except Exception:
     openai_version = 'unknown'
@@ -61,7 +62,158 @@ class AIClient:
 
         # Initialize OpenAI client
         self._easyocr_reader = None
+
+        # Language detection cache to avoid repeated API calls
+        self._language_cache = {}
+        self._cache_max_size = 100
         
+    def detect_language_openai(self, text):
+        """Use OpenAI to detect the language of input text with caching"""
+        if not text or not text.strip():
+            return 'English'
+
+        # Create a hash of the text for caching (first 200 chars to avoid memory issues)
+        text_hash = hash(text.strip()[:200])
+
+        # Check cache first
+        if text_hash in self._language_cache:
+            return self._language_cache[text_hash]
+
+        try:
+            # Create a minimal prompt for language detection
+            detection_prompt = f"Detect the language of this text. Return only the language name (Italian, Spanish, Portuguese, or English). Text: {text[:500]}"
+
+            if USING_OPENAI_V1:
+                response = self.client.chat.completions.create(
+                    model="gpt-3.5-turbo",  # Use faster model for language detection
+                    messages=[
+                        {"role": "system", "content": "You are a language detection expert. Respond with only the language name: Italian, Spanish, Portuguese, or English."},
+                        {"role": "user", "content": detection_prompt}
+                    ],
+                    temperature=0.1,  # Low temperature for consistent results
+                    max_tokens=10  # Very short response expected
+                )
+                detected_language = response.choices[0].message.content.strip()
+            else:
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are a language detection expert. Respond with only the language name: Italian, Spanish, Portuguese, or English."},
+                        {"role": "user", "content": detection_prompt}
+                    ],
+                    temperature=0.1,
+                    max_tokens=10
+                )
+                detected_language = response.choices[0].message.content.strip()
+
+            # Normalize the response to ensure it's one of our supported languages
+            detected_language = detected_language.lower().capitalize()
+
+            # Handle variations in response format
+            if detected_language in ['Italian', 'Italiano']:
+                return 'Italian'
+            elif detected_language in ['Spanish', 'Español']:
+                return 'Spanish'
+            elif detected_language in ['Portuguese', 'Português']:
+                return 'Portuguese'
+            elif detected_language in ['English']:
+                return 'English'
+            else:
+                # Fallback to keyword-based detection if OpenAI doesn't give a clear answer
+                detected_language = self._detect_language_fallback(text)
+
+            # Cache the result
+            if len(self._language_cache) >= self._cache_max_size:
+                # Remove oldest entries (simple FIFO)
+                oldest_keys = list(self._language_cache.keys())[:len(self._language_cache) - self._cache_max_size + 1]
+                for key in oldest_keys:
+                    del self._language_cache[key]
+
+            self._language_cache[text_hash] = detected_language
+            return detected_language
+
+        except Exception as e:
+            logger.warning(f"OpenAI language detection failed: {str(e)}. Using fallback method.")
+            detected_language = self._detect_language_fallback(text)
+
+            # Cache the fallback result too
+            if len(self._language_cache) >= self._cache_max_size:
+                oldest_keys = list(self._language_cache.keys())[:len(self._language_cache) - self._cache_max_size + 1]
+                for key in oldest_keys:
+                    del self._language_cache[key]
+
+            self._language_cache[text_hash] = detected_language
+            return detected_language
+
+    def clear_language_cache(self):
+        """Clear the language detection cache"""
+        self._language_cache.clear()
+
+    def _detect_language_fallback(self, text):
+        """Fallback keyword-based language detection"""
+        if not text or not text.strip():
+            return 'English'
+
+        text_lower = text.lower().strip()
+
+        # Italian indicators
+        italian_words = [
+            'ciao', 'grazie', 'prego', 'buongiorno', 'buonasera', 'buonanotte',
+            'come', 'stai', 'bene', 'male', 'perfetto', 'ottimo', 'eccellente',
+            'scusi', 'mi dispiace', 'arrivederci', 'salve', 'piacere', 'conosci',
+            'parlare', 'capire', 'aiutare', 'lavoro', 'casa', 'famiglia',
+            'italiano', 'italia', 'roma', 'milano', 'napoli', 'firenze'
+        ]
+
+        # Spanish indicators
+        spanish_words = [
+            'hola', 'gracias', 'por favor', 'buenos días', 'buenas tardes', 'buenas noches',
+            'como', 'estas', 'bien', 'mal', 'perfecto', 'excelente', 'muy bien',
+            'disculpe', 'lo siento', 'hasta luego', 'saludos', 'gusto', 'conocer',
+            'hablar', 'entender', 'ayudar', 'trabajo', 'casa', 'familia',
+            'español', 'españa', 'madrid', 'barcelona', 'mexico', 'argentina'
+        ]
+
+        # Portuguese indicators
+        portuguese_words = [
+            'olá', 'obrigado', 'obrigada', 'por favor', 'bom dia', 'boa tarde', 'boa noite',
+            'como', 'está', 'bem', 'mal', 'perfeito', 'excelente', 'muito bem',
+            'desculpe', 'sinto muito', 'até logo', 'saudações', 'prazer', 'conhecer',
+            'falar', 'entender', 'ajudar', 'trabalho', 'casa', 'família',
+            'português', 'portugal', 'brasil', 'lisboa', 'porto', 'rio de janeiro'
+        ]
+
+        # Count matches for each language
+        italian_count = sum(1 for word in italian_words if word in text_lower)
+        spanish_count = sum(1 for word in spanish_words if word in text_lower)
+        portuguese_count = sum(1 for word in portuguese_words if word in text_lower)
+
+        # Check for specific linguistic patterns
+        if 'ch' in text_lower and ('che' in text_lower or 'chi' in text_lower):
+            italian_count += 2
+        if text_lower.endswith(('zione', 'sione', 'tore', 'tori')):
+            italian_count += 2
+
+        if 'ñ' in text_lower or 'll' in text_lower:
+            spanish_count += 2
+        if text_lower.endswith(('ción', 'sión', 'mente')):
+            spanish_count += 2
+
+        if 'ã' in text_lower or 'õ' in text_lower or 'ç' in text_lower:
+            portuguese_count += 2
+        if text_lower.endswith(('ção', 'são', 'mente')):
+            portuguese_count += 2
+
+        # Return language with highest count, default to English
+        if italian_count > spanish_count and italian_count > portuguese_count:
+            return 'Italian'
+        elif spanish_count > portuguese_count:
+            return 'Spanish'
+        elif portuguese_count > 0:
+            return 'Portuguese'
+        else:
+            return 'English'
+
     def extract_client_info(self, text):
         """Extract client name and contact info from text"""
         if not text:
@@ -135,21 +287,19 @@ class AIClient:
             logger.error(f"Error extracting client info: {str(e)}")
             return None, None
     
-    def generate_response(self, text, is_followup=False, recipient_name: str | None = None, conversation_history=None, detected_language='English'):
+    def generate_response(self, text, is_followup=False, recipient_name: str | None = None, conversation_history=None, detected_language=None):
         """Generate AI response for the given text in the detected language"""
         if not text:
-            # Return error message in detected language
-            error_messages = {
-                'Italian': "Non sono riuscito a capire il tuo messaggio. Per favore fornisci più informazioni.",
-                'Spanish': "No pude entender tu mensaje. Por favor proporciona más información.",
-                'Portuguese': "Não consegui entender sua mensagem. Por favor, forneça mais informações.",
-                'English': "I couldn't understand your message. Please provide more information."
-            }
+            # Return default English error message for empty text
             return {
-                'content': error_messages.get(detected_language, error_messages['English']),
+                'content': "I'm sorry, I encountered an error while processing your request. Please try again later.",
                 'from_knowledge_base': False,
                 'knowledge_base_id': None
             }
+
+        # Detect language if not provided
+        if not detected_language:
+            detected_language = self.detect_language_openai(text)
             
         # For follow-up messages, skip knowledge base check
         if not is_followup:
@@ -327,6 +477,11 @@ class AIClient:
                 
             vision_text = self._clean_extracted_text(extracted_text)
             vision_score = 0.6 + (len(vision_text) / 900.0)
+
+            # Initialize best score and text for comparison
+            best_score = vision_score
+            best_text = vision_text
+
             if vision_score >= best_score:
                 return vision_text
             return best_text or vision_text
