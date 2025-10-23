@@ -16,24 +16,24 @@ from app.views import ocr_ai_image_upload
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.DashboardView.as_view(), name='dashboard'),
-    path('messages/create/', views.MessageCreateView.as_view(), name='message_create'),
-    path('messages/<int:pk>/edit/', views.MessageUpdateView.as_view(), name='message_edit'),
-    path('messages/<int:pk>/', views.MessageDetailView.as_view(), name='message_detail'),
-    path('messages/<int:pk>/save-to-kb/', views.save_to_knowledge_base, name='save_to_kb'),
-    path('messages/<int:pk>/create-lead/', views.create_lead, name='create_lead'),
-    path('messages/<int:message_id>/delete/', views.delete_message, name='delete_specific_message'),
-    # path('messages/<int:message_id>/process/', views.process_response, name='process_response'),
-    path('messages/<int:message_id>/pdf/', views.generate_pdf, name='generate_pdf'),
-    path('api/approve-and-save/', views.approve_and_save, name='approve_and_save'),
-    path('messages/<int:pk>/ajax-enhance/', views.ajax_enhance_response, name='ajax_enhance_response'),
-    path('messages/<int:pk>/json/', get_message_json, name='get_message_json'),
-    path('messages/<int:message_id>/save-to-airtable-accounts/', views.save_to_airtable_accounts, name='save_to_airtable_accounts'),
-    path('messages/<int:message_id>/update/', views.update_message, name='update_message'),
-    path('api/ocr-ai-image-upload/', ocr_ai_image_upload, name='ocr_ai_image_upload'),
+    path('ai/', views.DashboardView.as_view(), name='dashboard'),
+    path('ai/messages/create/', views.MessageCreateView.as_view(), name='message_create'),
+    path('ai/messages/<int:pk>/edit/', views.MessageUpdateView.as_view(), name='message_edit'),
+    path('ai/messages/<int:pk>/', views.MessageDetailView.as_view(), name='message_detail'),
+    path('ai/messages/<int:pk>/save-to-kb/', views.save_to_knowledge_base, name='save_to_kb'),
+    path('ai/messages/<int:pk>/create-lead/', views.create_lead, name='create_lead'),
+    path('ai/messages/<int:message_id>/delete/', views.delete_message, name='delete_specific_message'),
+    # path('ai/messages/<int:message_id>/process/', views.process_response, name='process_response'),
+    path('ai/messages/<int:message_id>/pdf/', views.generate_pdf, name='generate_pdf'),
+    path('ai/api/approve-and-save/', views.approve_and_save, name='approve_and_save'),
+    path('ai/messages/<int:pk>/ajax-enhance/', views.ajax_enhance_response, name='ajax_enhance_response'),
+    path('ai/messages/<int:pk>/json/', get_message_json, name='get_message_json'),
+    path('ai/messages/<int:message_id>/save-to-airtable-accounts/', views.save_to_airtable_accounts, name='save_to_airtable_accounts'),
+    path('ai/messages/<int:message_id>/update/', views.update_message, name='update_message'),
+    path('ai/api/ocr-ai-image-upload/', ocr_ai_image_upload, name='ocr_ai_image_upload'),
     
     # Include app URLs for real-time chat functionality
-    path('', include('app.urls')),
+    path('ai/', include('app.urls')),
 ]
 
 # Add media URL configuration - this is needed for image uploads to work
@@ -41,6 +41,6 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += [
-    path('chat-history/', chat_history_api, name='chat_history_api'),
-    path('chat-detail/<int:pk>/', chat_detail_api, name='chat_detail_api'),
+    path('ai/chat-history/', chat_history_api, name='chat_history_api'),
+    path('ai/chat-detail/<int:pk>/', chat_detail_api, name='chat_detail_api'),
 ]

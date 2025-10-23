@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const payload = { action: 'save_response', response_override: responseToSave };
 
-            fetch(`/messages/{{ message.id }}/handle-client-action/`, {
+            fetch(`/ai/messages/{{ message.id }}/handle-client-action/`, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}',
@@ -301,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modalSearchBtn.disabled = true;
 
         // Make API request
-        fetch('/api/search-clients/', {
+        fetch('/ai/api/search-clients/', {
             method: 'POST',
             headers: {
                 'X-CSRFToken': '{{ csrf_token }}',

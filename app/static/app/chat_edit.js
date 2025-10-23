@@ -40,7 +40,7 @@ function setupChatEdit(li, chat) {
                 return;
             }
 
-            fetch(`/messages/${chat.id}/update/`, {
+            fetch(`/ai/messages/${chat.id}/update/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

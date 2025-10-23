@@ -576,7 +576,7 @@ document.addEventListener('DOMContentLoaded', function() {
         searchBtn.disabled = true;
 
         // Make API request
-        fetch('/api/search-clients/', {
+        fetch('/ai/api/search-clients/', {
             method: 'POST',
             headers: {
                 'X-CSRFToken': '{{ csrf_token }}',
@@ -872,7 +872,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Directly save to KB via handle-client-action
-            fetch(`/messages/${messageId}/handle-client-action/`, {
+            fetch(`/ai/messages/${messageId}/handle-client-action/`, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}',
@@ -924,7 +924,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal.hide();
                 button.disabled = true;
                 button.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving...';
-                fetch(`/messages/${messageId}/save-to-airtable-accounts/`, {
+                fetch(`/ai/messages/${messageId}/save-to-airtable-accounts/`, {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': '{{ csrf_token }}',
@@ -985,7 +985,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Creating...';
                         this.disabled = true;
                         
-                        fetch(`/messages/${messageId}/create-lead/`, {
+                        fetch(`/ai/messages/${messageId}/create-lead/`, {
                             method: 'POST',
                             headers: {
                                 'X-CSRFToken': '{{ csrf_token }}',
@@ -1033,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Creating...';
                     this.disabled = true;
                     
-                    fetch(`/messages/${messageId}/create-lead/`, {
+                    fetch(`/ai/messages/${messageId}/create-lead/`, {
                         method: 'POST',
                         headers: {
                             'X-CSRFToken': '{{ csrf_token }}',
@@ -1167,7 +1167,7 @@ function handleClientAction(action, messageId, button, additionalData = {}) {
     };
     
     // Send action request
-    fetch(`/messages/${messageId}/handle-client-action/`, {
+    fetch(`/ai/messages/${messageId}/handle-client-action/`, {
         method: 'POST',
         headers: {
             'X-CSRFToken': '{{ csrf_token }}',

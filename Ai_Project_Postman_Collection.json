@@ -8,7 +8,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:8000",
+      "value": "http://localhost:8000/ai",
       "type": "string"
     },
     {
@@ -938,7 +938,7 @@
         "type": "text/javascript",
         "exec": [
           "// Set up environment variables",
-          "pm.variables.set('baseUrl', pm.variables.get('baseUrl') || 'http://localhost:8000');",
+          "pm.variables.set('baseUrl', pm.variables.get('baseUrl') || 'http://localhost:8000/ai');",
           "",
           "// Check if OpenAI API key is available",
           "if (!pm.variables.get('openai_api_key')) {",

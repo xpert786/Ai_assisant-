@@ -753,7 +753,7 @@
                 li.onclick = (e) => {
                     if (e.target.closest('.chat-menu-btn') || e.target.closest('.dropdown-menu')) return;
                     if (e) e.preventDefault();
-                    window.location.href = `/?message_id=${chat.id}`;
+                    window.location.href = `/ai/?message_id=${chat.id}`;
                 };
                 // 3-dots menu logic
                 const menuBtn = li.querySelector('.chat-menu-btn');
@@ -793,7 +793,7 @@
                     
                     // Function to save changes
                     function saveChanges(newText) {
-                        fetch(`/messages/${chat.id}/update/`, {
+                        fetch(`/ai/messages/${chat.id}/update/`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -838,7 +838,7 @@
                     showDeleteConfirmDialog({
                         onConfirm: function() {
                             console.log('Sending delete request...');
-                            fetch(`/messages/${chat.id}/delete/`, { method: 'POST', headers: { 'X-CSRFToken': getCSRFToken() } })
+                            fetch(`/ai/messages/${chat.id}/delete/`, { method: 'POST', headers: { 'X-CSRFToken': getCSRFToken() } })
                                 .then(async res => {
                                     const text = await res.text();
                                     console.log('Raw response:', text);
@@ -874,7 +874,7 @@
         }
     }
     function loadChatHistory() {
-        fetch('/chat-history/')
+        fetch('/ai/chat-history/')
             .then(res => res.json())
             .then(data => {
                 allChats = data.history || [];
@@ -908,7 +908,7 @@
                             <!-- Input Section -->
                             <div class="card border-0 shadow-sm fade-in mb-4 input-card">
                                 <div class="card-body p-4 p-md-5">
-                                    <form method="post" action="/messages/create/" enctype="multipart/form-data" id="messageForm">
+                                    <form method="post" action="/ai/messages/create/" enctype="multipart/form-data" id="messageForm">
                                         <input type="hidden" name="csrfmiddlewaretoken" value="${getCSRFToken()}">
                                         
                                         <div class="row g-4">
@@ -1051,7 +1051,7 @@
             }
             
             // Reset URL without reloading the page
-            history.pushState({}, '', '/');
+            history.pushState({}, '', '/ai/');
             
             // Scroll to top
             window.scrollTo(0, 0);

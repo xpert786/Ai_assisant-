@@ -48,7 +48,7 @@ Create a `.env` file in your project root or set the following variables in Post
 
 ```
 OPENAI_API_KEY=your_openai_api_key_here
-BASE_URL=http://localhost:8000
+BASE_URL=http://localhost:8000/ai
 ```
 
 ### 2. Import the Collection
@@ -64,7 +64,7 @@ BASE_URL=http://localhost:8000
 1. In Postman, go to **Environments**
 2. Create a new environment (e.g., "AI Project Dev")
 3. Add variables:
-   - `baseUrl`: `http://localhost:8000`
+   - `baseUrl`: `http://localhost:8000/ai`
    - `openai_api_key`: Your OpenAI API key
 
 ### 4. Authentication
@@ -134,7 +134,7 @@ Content-Type: application/json
 
 ## Notes
 
-- The collection assumes your Django server runs on `http://localhost:8000`
+- The collection assumes your Django server runs on `http://localhost:8000/ai`
 - Some endpoints require file uploads (OCR) - use Postman's form-data option
 - Real-time chat endpoints use Server-Sent Events for streaming responses
 - The collection includes comprehensive test scripts for validation

@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sendButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
         
         // Send to real-time chat endpoint
-        fetch('/api/real-time-chat/', {
+        fetch('/ai/api/real-time-chat/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -244,10 +244,10 @@ document.addEventListener('DOMContentLoaded', function() {
         scrollToBottom();
         
         // Start streaming
-        const eventSource = new EventSource('/api/stream-ai-response/');
+        const eventSource = new EventSource('/ai/api/stream-ai-response/');
         
         // Send the message via POST first
-        fetch('/api/stream-ai-response/', {
+        fetch('/ai/api/stream-ai-response/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

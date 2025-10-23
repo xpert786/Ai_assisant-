@@ -54,7 +54,7 @@ function showDuplicateLeadPopup(message, client) {
 function handleSaveToKnowledgeBase(messageId, button) {
     const originalText = button.innerHTML;
     
-    fetch(`/messages/${messageId}/save-to-kb/`, {
+    fetch(`/ai/messages/${messageId}/save-to-kb/`, {
         method: 'POST',
         headers: {
             'X-CSRFToken': getCSRFToken(),

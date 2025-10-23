@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sendButton.disabled = true;
         sendButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Sending...';
         
-        fetch('/api/real-time-chat/', {
+        fetch('/ai/api/real-time-chat/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
