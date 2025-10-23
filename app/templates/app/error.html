@@ -1,0 +1,33 @@
+{% extends "app/base.html" %}
+
+{% block title %}Error - {{ error_code }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 text-center py-5">
+            <div class="card shadow-sm">
+                <div class="card-body py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 4rem;"></i>
+                    </div>
+                    <h1 class="mb-4">{{ error_code }} - {{ error_title|default:"Error" }}</h1>
+                    <p class="lead mb-4">{{ error_message|default:"An unexpected error occurred." }}</p>
+                    
+                    {% if error_details %}
+                        <div class="alert alert-danger mx-auto" style="max-width: 600px;">
+                            {{ error_details }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                            <i class="bi bi-house me-2"></i> Go to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

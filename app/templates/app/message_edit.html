@@ -1,0 +1,814 @@
+{% extends "app/base.html" %}
+
+{% block title %}Edit Response{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="app-header text-center fade-in">
+        <h1 class="app-title display-5">Edit AI Response</h1>
+        <p class="app-subtitle fs-6">Review and edit the AI-generated response before finalizing</p>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1100;">
+        <!-- Success Toast Template -->
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span id="successToastMessage">Operation successful</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        
+        <!-- Error Toast Template -->
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <span id="errorToastMessage">An error occurred</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        
+        <!-- Confirm Toast Template -->
+        <div id="confirmToast" class="toast align-items-center text-dark bg-light border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+            <div class="d-flex flex-column">
+                <div class="toast-header">
+                    <i class="bi bi-question-circle me-2 text-primary"></i>
+                    <strong class="me-auto">Confirmation</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    <p id="confirmToastMessage">Are you sure you want to proceed?</p>
+                    <div class="mt-2 pt-2 border-top d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="toast">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="confirmToastBtn">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Client Information section removed as requested -->
+        
+        <!-- Response Editor Column - Full Width -->
+        <div class="col-lg-12">
+            <!-- Response Editor -->
+            <div class="card border-0 shadow-sm fade-in mb-4 editor-card">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3">
+                        <i class="bi bi-robot me-2 text-accent"></i>AI Response
+                        {% if message.from_knowledge_base %}
+                        <span class="badge bg-accent rounded-pill px-3 py-2 ms-2">
+                            <i class="bi bi-database-check me-1"></i>
+                            From Airtable
+                        </span>
+                        {% endif %}
+                    </h5>
+                    
+                    <form id="editResponseForm" method="post" action="javascript:void(0);">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            {{ form.edited_response }}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Back
+                            </a>
+                            <div>
+                                <button type="button" class="btn btn-outline-info me-2" id="searchClientsBtn" data-bs-toggle="modal" data-bs-target="#searchModal">
+                                    <i class="bi bi-search me-2"></i>Search Clients
+                                </button>
+                                <button type="button" class="btn btn-outline-accent me-2" id="saveKbBtn">
+                                    <i class="bi bi-database-add me-2"></i>Save to Airtable
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="finalizeResponseBtn">
+                                    <i class="bi bi-check-circle me-2"></i>Finalize Response
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="aiAnswerBox" class="mt-4" style="display:none;">
+                        <div class="card border-0 shadow-sm fade-in">
+                            <div class="card-body p-4">
+                                <h5 class="card-title mb-3"><i class="bi bi-robot me-2 text-accent"></i>AI Answer</h5>
+                                <div id="aiAnswerContent"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Alternative Responses section removed as requested -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Client Information section removed
+    // const createLeadBtn = document.getElementById('createLeadBtn');
+    const saveKbBtn = document.getElementById('saveKbBtn');
+    const editedResponseField = document.getElementById('{{ form.edited_response.id_for_label }}');
+    const editForm = document.getElementById('editResponseForm');
+    const finalizeBtn = document.getElementById('finalizeResponseBtn');
+    const aiAnswerBox = document.getElementById('aiAnswerBox');
+    const aiAnswerContent = document.getElementById('aiAnswerContent');
+    
+    // Toast notification functions
+    function showSuccessToast(message) {
+        const successToast = document.getElementById('successToast');
+        const successToastMessage = document.getElementById('successToastMessage');
+        successToastMessage.textContent = message;
+        const toast = new bootstrap.Toast(successToast, { delay: 5000 });
+        toast.show();
+    }
+    
+    function showErrorToast(message) {
+        const errorToast = document.getElementById('errorToast');
+        const errorToastMessage = document.getElementById('errorToastMessage');
+        errorToastMessage.textContent = message;
+        const toast = new bootstrap.Toast(errorToast, { delay: 5000 });
+        toast.show();
+    }
+    
+    function showConfirmToast(message, callback) {
+        const confirmToast = document.getElementById('confirmToast');
+        const confirmToastMessage = document.getElementById('confirmToastMessage');
+        const confirmToastBtn = document.getElementById('confirmToastBtn');
+        
+        confirmToastMessage.textContent = message;
+        const toast = new bootstrap.Toast(confirmToast);
+        
+        // Remove any existing event listeners
+        const newConfirmBtn = confirmToastBtn.cloneNode(true);
+        confirmToastBtn.parentNode.replaceChild(newConfirmBtn, confirmToastBtn);
+        
+        // Add new event listener
+        newConfirmBtn.addEventListener('click', function() {
+            toast.hide();
+            callback(true);
+        });
+        
+        // Show the toast
+        toast.show();
+        
+        // Return false by default (if toast is dismissed)
+        return false;
+    }
+    
+    // Alternative responses
+    document.querySelectorAll('.use-alternative').forEach(button => {
+        button.addEventListener('click', function() {
+            const content = this.getAttribute('data-content');
+            if (editedResponseField) {
+                editedResponseField.value = content;
+                showSuccessToast('Alternative response applied');
+            }
+        });
+    });
+    
+    // Save to Knowledge Base (direct save, no modal)
+    if (saveKbBtn) {
+        saveKbBtn.addEventListener('click', function() {
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving...';
+            
+            // Get AI Answer content if available, otherwise use edited response
+            let responseToSave = '';
+            
+            // Check if AI Answer is visible and has content
+            if (aiAnswerBox.style.display !== 'none' && aiAnswerContent.innerText.trim()) {
+                responseToSave = aiAnswerContent.innerText.trim();
+            } else if (editedResponseField && editedResponseField.value.trim()) {
+                responseToSave = editedResponseField.value.trim();
+            }
+            
+            const payload = { action: 'save_response', response_override: responseToSave };
+
+            fetch(`/messages/{{ message.id }}/handle-client-action/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessToast(data.message || 'Successfully saved to Airtable');
+                    this.innerHTML = '<i class="bi bi-check me-1"></i>Saved to Airtable';
+                } else {
+                    if (data.duplicate) {
+                        showWarningToast(data.message || 'Already exists in Knowledge Base');
+                    } else {
+                        showErrorToast('Error: ' + (data.message || 'Failed to save to Airtable'));
+                    }
+                    this.innerHTML = '<i class="bi bi-database-add me-2"></i>Save to Airtable';
+                    this.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showErrorToast('An error occurred. Please try again.');
+                this.innerHTML = '<i class="bi bi-database-add me-2"></i>Save to Airtable';
+                this.disabled = false;
+            });
+        });
+    }
+    
+    // Create Lead functionality removed as Client Information section was removed
+
+    if (editForm && finalizeBtn) {
+        editForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            finalizeBtn.disabled = true;
+            finalizeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Generating...';
+            aiAnswerBox.style.display = 'none';
+            aiAnswerContent.innerHTML = '';
+            
+            const edited_response = document.getElementById('{{ form.edited_response.id_for_label }}').value;
+            
+            fetch("{% url 'ajax_enhance_response' message.id %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    edited_response: edited_response
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                finalizeBtn.disabled = false;
+                finalizeBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Finalize Response';
+                if (data.success) {
+                    aiAnswerBox.style.display = 'block';
+                    // Store the answer with proper formatting
+                    aiAnswerContent.innerHTML = `<div class='p-2'>${data.answer.replace(/\n/g, '<br>')}</div>`;
+                    
+                    // Automatically update the edited response field with the AI answer
+                    if (editedResponseField) {
+                        editedResponseField.value = data.answer;
+                    }
+                } else {
+                    aiAnswerBox.style.display = 'block';
+                    aiAnswerContent.innerHTML = `<div class='text-danger'>${data.error || 'An error occurred.'}</div>`;
+                }
+            })
+            .catch(error => {
+                finalizeBtn.disabled = false;
+                finalizeBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Finalize Response';
+                aiAnswerBox.style.display = 'block';
+                aiAnswerContent.innerHTML = `<div class='text-danger'>An error occurred. Please try again.</div>`;
+            });
+        });
+    }
+
+    // Modal Search Functionality
+    const modalSearchInput = document.getElementById('modalSearchInput');
+    const modalSearchBtn = document.getElementById('modalSearchBtn');
+    const modalClearSearchBtn = document.getElementById('modalClearSearchBtn');
+    const modalSearchResults = document.getElementById('modalSearchResults');
+    const modalClientsList = document.getElementById('modalClientsList');
+    const modalAccountsList = document.getElementById('modalAccountsList');
+    const modalLeadsList = document.getElementById('modalLeadsList');
+    const modalClientsCount = document.getElementById('modalClientsCount');
+    const modalAccountsCount = document.getElementById('modalAccountsCount');
+    const modalLeadsCount = document.getElementById('modalLeadsCount');
+
+    // Modal search function
+    function performModalSearch() {
+        const query = modalSearchInput.value.trim();
+
+        if (!query) {
+            showWarningToast('Please enter a search term');
+            return;
+        }
+
+        // Show loading state
+        modalSearchBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Searching...';
+        modalSearchBtn.disabled = true;
+
+        // Make API request
+        fetch('/api/search-clients/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ query: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayModalSearchResults(data.results, query);
+                showSuccessToast(`Found results for "${query}"`);
+            } else {
+                showErrorToast('Error: ' + (data.message || 'Search failed'));
+                hideModalSearchResults();
+            }
+        })
+        .catch(error => {
+            console.error('Modal search error:', error);
+            showErrorToast('An error occurred while searching');
+            hideModalSearchResults();
+        })
+        .finally(() => {
+            // Reset button state
+            modalSearchBtn.innerHTML = '<i class="bi bi-search me-1"></i>Search';
+            modalSearchBtn.disabled = false;
+        });
+    }
+
+    // Display modal search results
+    function displayModalSearchResults(results, query) {
+        // Clear previous results
+        modalClientsList.innerHTML = '';
+        modalAccountsList.innerHTML = '';
+        modalLeadsList.innerHTML = '';
+
+        // Update counts
+        modalClientsCount.textContent = results.clients.length;
+        modalAccountsCount.textContent = results.accounts.length;
+        modalLeadsCount.textContent = results.leads.length;
+
+        // Display clients
+        if (results.clients.length > 0) {
+            results.clients.forEach(client => {
+                const clientCard = createModalResultCard(client, 'client', query);
+                modalClientsList.appendChild(clientCard);
+            });
+        } else {
+            modalClientsList.innerHTML = '<p class="text-muted mb-0">No clients found</p>';
+        }
+
+        // Display accounts
+        if (results.accounts.length > 0) {
+            results.accounts.forEach(account => {
+                const accountCard = createModalResultCard(account, 'account', query);
+                modalAccountsList.appendChild(accountCard);
+            });
+        } else {
+            modalAccountsList.innerHTML = '<p class="text-muted mb-0">No accounts found</p>';
+        }
+
+        // Display leads
+        if (results.leads.length > 0) {
+            results.leads.forEach(lead => {
+                const leadCard = createModalResultCard(lead, 'lead', query);
+                modalLeadsList.appendChild(leadCard);
+            });
+        } else {
+            modalLeadsList.innerHTML = '<p class="text-muted mb-0">No leads found</p>';
+        }
+
+        // Show results
+        modalSearchResults.classList.remove('d-none');
+    }
+
+    // Create modal result card
+    function createModalResultCard(item, type, query) {
+        const card = document.createElement('div');
+        card.className = 'result-card mb-2 p-2 border rounded';
+
+        const fields = item.fields;
+        let title = '';
+        let subtitle = '';
+        let details = [];
+
+        // Format different types of results
+        if (type === 'client') {
+            title = fields.Full_Name || fields.Name || 'Unknown Client';
+            subtitle = fields.Email || fields.Phone_Formatted || 'No contact info';
+            details.push(fields.Status ? `Status: ${fields.Status}` : '');
+            details.push(fields.Associated_Account ? `Account: ${fields.Associated_Account}` : '');
+            card.classList.add('border-primary');
+        } else if (type === 'account') {
+            title = fields.Company_Name || fields.Name || 'Unknown Company';
+            subtitle = fields.Type || 'No type specified';
+            details.push(fields.State_of_Formation ? `State: ${fields.State_of_Formation}` : '');
+            details.push(fields.Status ? `Status: ${fields.Status}` : '');
+            card.classList.add('border-success');
+        } else if (type === 'lead') {
+            title = fields.Full_Name || fields.Name || 'Unknown Lead';
+            subtitle = fields.Email || fields.Phone || 'No contact info';
+            details.push(fields.Status ? `Status: ${fields.Status}` : '');
+            details.push(fields.Associated_Account ? `Account: ${fields.Associated_Account}` : '');
+            card.classList.add('border-warning');
+        }
+
+        // Filter out empty details
+        details = details.filter(detail => detail);
+
+        card.innerHTML = `
+            <div class="result-title fw-bold">${highlightText(title, query)}</div>
+            <div class="result-subtitle text-muted small">${highlightText(subtitle, query)}</div>
+            ${details.length > 0 ? '<div class="result-details text-muted small mt-1">' + details.map(detail => highlightText(detail, query)).join('<br>') + '</div>' : ''}
+        `;
+
+        return card;
+    }
+
+    // Hide modal search results
+    function hideModalSearchResults() {
+        modalSearchResults.classList.add('d-none');
+        modalSearchInput.value = '';
+    }
+
+    // Modal search event listeners
+    if (modalSearchBtn) {
+        modalSearchBtn.addEventListener('click', performModalSearch);
+    }
+
+    if (modalSearchInput) {
+        modalSearchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performModalSearch();
+            }
+        });
+    }
+
+    if (modalClearSearchBtn) {
+        modalClearSearchBtn.addEventListener('click', function() {
+            hideModalSearchResults();
+            showSuccessToast('Search results cleared');
+        });
+    }
+});
+</script>
+
+<style>
+/* Toast styling */
+.toast {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius);
+    min-width: 300px;
+    font-size: 1rem;
+}
+
+.toast-container {
+    z-index: 1100;
+}
+
+#confirmToast {
+    min-width: 350px;
+    background-color: #fff !important;
+    border-left: 4px solid var(--primary-color) !important;
+}
+
+#confirmToast .toast-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0.75rem 1rem;
+}
+
+#confirmToast .toast-body {
+    padding: 1rem;
+}
+
+#confirmToast .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+#confirmToast .btn-primary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+#successToast, #errorToast {
+    min-width: 300px;
+    font-weight: 500;
+}
+
+/* Client history styling */
+.client-history {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.history-item {
+    border-left: 3px solid var(--accent-color);
+}
+
+.history-item-link:hover .history-item {
+    background: #e0f7fa;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(76,201,240,0.12);
+}
+
+/* Alternative responses */
+.alternative-item {
+    border-left: 3px solid var(--accent-color);
+    transition: all 0.3s ease;
+}
+
+.alternative-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Enhanced UI styling */
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3a0ca3;
+    --accent-color: #4cc9f0;
+    --success-color: #4ade80;
+    --warning-color: #fbbf24;
+    --danger-color: #ef4444;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+}
+
+.btn-outline-accent {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.btn-outline-accent:hover {
+    color: white;
+    background-color: var(--accent-color);
+}
+
+.text-accent {
+    color: var(--accent-color) !important;
+}
+
+.bg-accent {
+    background-color: var(--accent-color) !important;
+}
+
+.client-card {
+    border-left: 4px solid var(--primary-color);
+}
+
+.message-card {
+    border-left: 4px solid var(--accent-color);
+}
+
+.editor-card {
+    border-left: 4px solid var(--secondary-color);
+}
+
+.alternatives-card {
+    border-left: 4px solid var(--warning-color);
+}
+
+.card {
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.25rem rgba(76, 201, 240, 0.25);
+}
+
+.btn-primary {
+    background: #4cc9f0;
+    border: none;
+    box-shadow: 0 4px 6px rgba(67, 97, 238, 0.3);
+    transition: all 0.5s ease;
+}
+
+.btn-primary:hover {
+    background: #4cc9f0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(67, 97, 238, 0.4);
+}
+
+/* Professional AI Response Styling */
+#id_edited_response {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    min-height: 200px;
+    resize: vertical;
+}
+
+#id_edited_response:focus {
+    border-color: #4cc9f0;
+    box-shadow: 0 0 0 0.25rem rgba(76, 201, 240, 0.25);
+    background: #ffffff;
+}
+
+.editor-card .card-title {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.editor-card {
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Search Modal Styling */
+.search-results {
+    animation: slideDown 0.3s ease-out;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.results-section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    height: 350px;
+    overflow-y: auto;
+}
+
+.results-title {
+    color: var(--dark-color);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+.results-list {
+    max-height: 270px;
+    overflow-y: auto;
+}
+
+.result-card {
+    background: #f8f9fa;
+    border-left: 4px solid transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.result-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.result-card.border-primary:hover {
+    border-left-color: var(--primary-color);
+}
+
+.result-card.border-success:hover {
+    border-left-color: #28a745;
+}
+
+.result-card.border-warning:hover {
+    border-left-color: #ffc107;
+}
+
+.result-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.result-subtitle {
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.result-details {
+    font-size: 0.75rem;
+}
+
+mark {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.1em 0.2em;
+    border-radius: 2px;
+}
+
+/* Search input styling */
+#modalSearchInput {
+    border-right: none;
+    border-radius: 0.375rem 0 0 0.375rem;
+}
+
+#modalSearchInput:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.25rem rgba(76, 201, 240, 0.25);
+}
+
+.input-group .btn {
+    border-radius: 0 0.375rem 0.375rem 0;
+    border-left: none;
+}
+
+/* Empty state styling */
+.results-list p.text-muted {
+    font-style: italic;
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+}
+</style>
+
+<!-- Search Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="searchModalLabel">
+                    <i class="bi bi-search me-2"></i>Client & Account Search
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-3">Search for existing clients, accounts, or leads by name, company, email, or phone number</p>
+
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control form-control-lg" id="modalSearchInput"
+                           placeholder="Enter name, company, email, or phone number..."
+                           aria-label="Search clients and accounts">
+                    <button class="btn btn-primary" type="button" id="modalSearchBtn">
+                        <i class="bi bi-search me-1"></i>Search
+                    </button>
+                </div>
+
+                <!-- Search Results -->
+                <div id="modalSearchResults" class="search-results d-none">
+                    <div class="row">
+                        <!-- Clients Results -->
+                        <div class="col-md-4">
+                            <div class="results-section">
+                                <h6 class="results-title">
+                                    <i class="bi bi-person me-1"></i>Clients
+                                    <span class="badge bg-primary ms-1" id="modalClientsCount">0</span>
+                                </h6>
+                                <div class="results-list" id="modalClientsList">
+                                    <!-- Client results will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Accounts Results -->
+                        <div class="col-md-4">
+                            <div class="results-section">
+                                <h6 class="results-title">
+                                    <i class="bi bi-building me-1"></i>Accounts
+                                    <span class="badge bg-success ms-1" id="modalAccountsCount">0</span>
+                                </h6>
+                                <div class="results-list" id="modalAccountsList">
+                                    <!-- Account results will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Leads Results -->
+                        <div class="col-md-4">
+                            <div class="results-section">
+                                <h6 class="results-title">
+                                    <i class="bi bi-person-plus me-1"></i>Leads
+                                    <span class="badge bg-warning ms-1" id="modalLeadsCount">0</span>
+                                </h6>
+                                <div class="results-list" id="modalLeadsList">
+                                    <!-- Lead results will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <button class="btn btn-outline-secondary btn-sm" id="modalClearSearchBtn">
+                            <i class="bi bi-x-circle me-1"></i>Clear Results
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

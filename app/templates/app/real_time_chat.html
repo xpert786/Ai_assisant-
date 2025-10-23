@@ -1,0 +1,536 @@
+{% extends "app/base.html" %}
+
+{% block title %}Real-Time AI Chat{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <!-- Chat Header -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-gradient-primary text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="fs-5 mb-0">
+                            <i class="bi bi-chat-dots me-2"></i>Real-Time AI Assistant
+                        </h3>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-success me-2" id="connectionStatus">
+                                <i class="bi bi-wifi"></i> Connected
+                            </span>
+                            <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-light">
+                                <i class="bi bi-house me-1"></i> Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Container -->
+            <div class="card border-0 shadow-sm chat-container">
+                <div class="card-body p-0">
+                    <!-- Messages Area -->
+                    <div id="chatMessages" class="chat-messages p-4">
+                        <!-- Welcome Message -->
+                        <div class="message ai-message mb-3">
+                            <div class="message-header d-flex align-items-center mb-2">
+                                <div class="avatar ai-avatar me-2">
+                                    <i class="bi bi-robot"></i>
+                                </div>
+                                <span class="message-sender">AI Assistant</span>
+                                <span class="message-time ms-auto text-muted">Just now</span>
+                            </div>
+                            <div class="message-content">
+                                <p class="mb-0">Hello! I'm your AI assistant. I can help you with various tasks and answer questions in real-time. I support multiple languages including English, Italian, Spanish, and Portuguese. How can I assist you today?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Typing Indicator -->
+                    <div id="typingIndicator" class="typing-indicator p-3 d-none">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar ai-avatar me-2">
+                                <i class="bi bi-robot"></i>
+                            </div>
+                            <div class="typing-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <span class="ms-2 text-muted">AI is typing...</span>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="chat-input-area p-4 border-top">
+                        <form id="chatForm" class="d-flex align-items-end">
+                            {% csrf_token %}
+                            <div class="flex-grow-1 me-3">
+                                <textarea 
+                                    id="messageInput" 
+                                    class="form-control" 
+                                    rows="1" 
+                                    placeholder="Type your message here... (Supports multiple languages)"
+                                    maxlength="2000"
+                                ></textarea>
+                                <div class="form-text text-end">
+                                    <span id="charCount">0</span>/2000 characters
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <button type="submit" id="sendButton" class="btn btn-primary mb-2" disabled>
+                                    <i class="bi bi-send me-1"></i> Send
+                                </button>
+                                <button type="button" id="clearButton" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-trash me-1"></i> Clear
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Language Detection Info -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-translate me-2 text-primary"></i>
+                        <span class="text-muted">
+                            <strong>Language Support:</strong> I automatically detect and respond in your language (English, Italian, Spanish, Portuguese)
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const clearButton = document.getElementById('clearButton');
+    const chatForm = document.getElementById('chatForm');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const connectionStatus = document.getElementById('connectionStatus');
+    const charCount = document.getElementById('charCount');
+    
+    let conversationHistory = [];
+    let isStreaming = false;
+    
+    // Auto-resize textarea
+    messageInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        
+        // Update character count
+        charCount.textContent = this.value.length;
+        
+        // Enable/disable send button
+        sendButton.disabled = this.value.trim().length === 0 || isStreaming;
+    });
+    
+    // Handle form submission
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        sendMessage();
+    });
+    
+    // Handle Enter key (without Shift)
+    messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+    
+    // Clear chat
+    clearButton.addEventListener('click', function() {
+        if (confirm('Are you sure you want to clear the chat history?')) {
+            conversationHistory = [];
+            chatMessages.innerHTML = `
+                <div class="message ai-message mb-3">
+                    <div class="message-header d-flex align-items-center mb-2">
+                        <div class="avatar ai-avatar me-2">
+                            <i class="bi bi-robot"></i>
+                        </div>
+                        <span class="message-sender">AI Assistant</span>
+                        <span class="message-time ms-auto text-muted">Just now</span>
+                    </div>
+                    <div class="message-content">
+                        <p class="mb-0">Chat cleared! How can I help you today?</p>
+                    </div>
+                </div>
+            `;
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            charCount.textContent = '0';
+            sendButton.disabled = true;
+        }
+    });
+    
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message || isStreaming) return;
+        
+        // Add user message to chat
+        addMessage('user', message);
+        
+        // Clear input
+        messageInput.value = '';
+        messageInput.style.height = 'auto';
+        charCount.textContent = '0';
+        sendButton.disabled = true;
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        // Send to real-time chat endpoint
+        sendToRealTimeChat(message);
+    }
+    
+    function addMessage(sender, content, isStreaming = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message mb-3`;
+        
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        const avatarClass = sender === 'user' ? 'user-avatar' : 'ai-avatar';
+        const avatarIcon = sender === 'user' ? 'bi-person-circle' : 'bi-robot';
+        const senderName = sender === 'user' ? 'You' : 'AI Assistant';
+        
+        messageDiv.innerHTML = `
+            <div class="message-header d-flex align-items-center mb-2">
+                <div class="avatar ${avatarClass} me-2">
+                    <i class="bi ${avatarIcon}"></i>
+                </div>
+                <span class="message-sender">${senderName}</span>
+                <span class="message-time ms-auto text-muted">${timeString}</span>
+            </div>
+            <div class="message-content">
+                <div class="message-text">${formatMessage(content)}</div>
+            </div>
+        `;
+        
+        chatMessages.appendChild(messageDiv);
+        scrollToBottom();
+        
+        // Add to conversation history
+        if (sender === 'user') {
+            conversationHistory.push({
+                role: 'user',
+                content: content,
+                timestamp: now.toISOString()
+            });
+        } else {
+            conversationHistory.push({
+                role: 'assistant',
+                content: content,
+                timestamp: now.toISOString()
+            });
+        }
+    }
+    
+    function showTypingIndicator() {
+        typingIndicator.classList.remove('d-none');
+        scrollToBottom();
+    }
+    
+    function hideTypingIndicator() {
+        typingIndicator.classList.add('d-none');
+    }
+    
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    function formatMessage(content) {
+        // Simple markdown-like formatting
+        return content
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\n/g, '<br>')
+            .replace(/`(.*?)`/g, '<code>$1</code>');
+    }
+    
+    function sendToRealTimeChat(message) {
+        isStreaming = true;
+        sendButton.disabled = true;
+        sendButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Sending...';
+        
+        fetch('/api/real-time-chat/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                message: message,
+                conversation_history: conversationHistory.slice(-10) // Keep last 10 messages for context
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            hideTypingIndicator();
+            
+            if (data.success) {
+                addMessage('ai', data.response);
+                
+                // Update connection status if language was detected
+                if (data.language && data.language !== 'English') {
+                    connectionStatus.innerHTML = `<i class="bi bi-translate"></i> ${data.language}`;
+                    connectionStatus.className = 'badge bg-info me-2';
+                }
+            } else {
+                addMessage('ai', 'Sorry, I encountered an error: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            hideTypingIndicator();
+            console.error('Error:', error);
+            addMessage('ai', 'Sorry, I encountered a network error. Please try again.');
+            connectionStatus.innerHTML = '<i class="bi bi-wifi-off"></i> Disconnected';
+            connectionStatus.className = 'badge bg-danger me-2';
+        })
+        .finally(() => {
+            isStreaming = false;
+            sendButton.disabled = messageInput.value.trim().length === 0;
+            sendButton.innerHTML = '<i class="bi bi-send me-1"></i> Send';
+        });
+    }
+    
+    // Initialize
+    messageInput.focus();
+});
+</script>
+
+<style>
+.chat-container {
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    max-height: calc(70vh - 120px);
+}
+
+.message {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-message {
+    margin-left: 20%;
+}
+
+.ai-message {
+    margin-right: 20%;
+}
+
+.message-header {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.message-sender {
+    color: #495057;
+}
+
+.message-time {
+    font-size: 0.75rem;
+}
+
+.message-content {
+    background: white;
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.user-message .message-content {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+}
+
+.user-message .message-content::after {
+    content: '';
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid #0056b3;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+}
+
+.ai-message .message-content::after {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-right: 8px solid white;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.user-avatar {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+}
+
+.ai-avatar {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
+.typing-indicator {
+    background: rgba(40, 167, 69, 0.1);
+    border-left: 4px solid #28a745;
+}
+
+.typing-dots {
+    display: flex;
+    align-items: center;
+}
+
+.typing-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #28a745;
+    margin: 0 2px;
+    animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes typing {
+    0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.chat-input-area {
+    background: white;
+    border-top: 1px solid #e9ecef;
+}
+
+#messageInput {
+    border: 2px solid #e9ecef;
+    border-radius: 1rem;
+    padding: 0.75rem 1rem;
+    resize: none;
+    transition: all 0.3s ease;
+}
+
+#messageInput:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.btn-primary:disabled {
+    transform: none;
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+/* Scrollbar styling */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .user-message {
+        margin-left: 10%;
+    }
+    
+    .ai-message {
+        margin-right: 10%;
+    }
+    
+    .chat-container {
+        height: 60vh;
+    }
+    
+    .chat-messages {
+        max-height: calc(60vh - 120px);
+    }
+}
+</style>
+{% endblock %}

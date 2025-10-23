@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Assistant{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --accent-color: #4cc9f0;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .text-accent {
+            color: var(--accent-color) !important;
+        }
+        
+        .bg-accent {
+            background-color: var(--accent-color) !important;
+        }
+        
+        .border-accent {
+            border-color: var(--accent-color) !important;
+        }
+        
+        .btn-accent {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-accent:hover {
+            background-color: #3ba8d0;
+            border-color: #3ba8d0;
+            color: white;
+        }
+        
+        .btn-outline-accent {
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
+        .btn-outline-accent:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .card {
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        
+        .shadow-sm {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .highlight-card {
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .response-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .input-card {
+            background: white;
+        }
+        
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .upload-area {
+            border: 2px dashed #dee2e6;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--accent-color);
+            background-color: rgba(76, 201, 240, 0.05);
+        }
+        
+        .user-message {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .ai-response {
+            background: linear-gradient(135deg, rgba(76, 201, 240, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-left: 4px solid #667eea;
+        }
+        
+        .app-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+        
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(76, 201, 240, 0.25);
+        }
+        
+        .form-control {
+            border-radius: var(--border-radius);
+            border: 2px solid #e9ecef;
+            transition: var(--transition);
+        }
+        
+        .form-control:hover {
+            border-color: #ced4da;
+        }
+        
+        .btn {
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .toast {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .alert {
+            border-radius: var(--border-radius);
+            border: none;
+        }
+        
+        .modal-content {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .confirmation-dialog {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, 0);
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            z-index: 1002;
+            min-width: 400px;
+            max-width: 500px;
+        }
+        
+        .dialog-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+        }
+        
+        .confirmation-dialog .dialog-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .confirmation-dialog .dialog-header h5 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .confirmation-dialog .dialog-header .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            line-height: 1;
+            padding: 0;
+            cursor: pointer;
+            color: #6b7280;
+            transition: var(--transition);
+        }
+        
+        .confirmation-dialog .dialog-header .close-btn:hover {
+            color: #374151;
+        }
+        
+        .confirmation-dialog .dialog-body {
+            padding: 1rem;
+        }
+        
+        .confirmation-dialog .dialog-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            padding: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .confirmation-dialog .btn-cancel {
+            background: #6b7280;
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+        
+        .confirmation-dialog .btn-confirm {
+            background: var(--accent-color);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+        
+        .confirmation-dialog .btn-cancel:hover,
+        .confirmation-dialog .btn-confirm:hover {
+            transform: translateY(-1px);
+        }
+        
+        .d-none {
+            display: none !important;
+        }
+        
+        /* Chat specific styles */
+        .chat-messages {
+            height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .chat-input-area {
+            border-top: 1px solid #dee2e6;
+            padding: 1rem;
+        }
+        
+        .user-message, .ai-response {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+        }
+        
+        .user-message h6, .ai-response h6 {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        {% block content %}{% endblock %}
+    </div>
+    
+    <!-- Bootstrap and jQuery JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

@@ -1,0 +1,14 @@
+[0;1;32m●[0m gunicorn.service - gunicorn daemon
+     Loaded: loaded (]8;;file://srv963737/etc/systemd/system/gunicorn.service/etc/systemd/system/gunicorn.service]8;;; [0;1;32menabled[0m; preset: [0;1;32menabled[0m)
+     Active: [0;1;32mactive (running)[0m since Mon 2025-08-18 15:10:00 UTC; 2s ago
+   Main PID: 15470 (gunicorn)
+      Tasks: 4 (limit: 9485)
+     Memory: 91.2M (peak: 91.7M)
+        CPU: 504ms
+     CGroup: /system.slice/gunicorn.service
+             ├─[0;38;5;245m15470 /home/ubuntu/Ai_Project/venv/bin/python3 /home/ubuntu/Ai_Project/venv/bin/gunicorn n8n.wsgi:application --bind unix:/home/ubuntu/Ai_Project/gunicorn.sock --workers 3 --timeout 120 --access-logfile /home/ubuntu/Ai_Project/logs/gunicorn-access.log --error-logfile /home/ubuntu/Ai_Project/logs/gunicorn-error.log[0m
+             ├─[0;38;5;245m15472 /home/ubuntu/Ai_Project/venv/bin/python3 /home/ubuntu/Ai_Project/venv/bin/gunicorn n8n.wsgi:application --bind unix:/home/ubuntu/Ai_Project/gunicorn.sock --workers 3 --timeout 120 --access-logfile /home/ubuntu/Ai_Project/logs/gunicorn-access.log --error-logfile /home/ubuntu/Ai_Project/logs/gunicorn-error.log[0m
+             ├─[0;38;5;245m15473 /home/ubuntu/Ai_Project/venv/bin/python3 /home/ubuntu/Ai_Project/venv/bin/gunicorn n8n.wsgi:application --bind unix:/home/ubuntu/Ai_Project/gunicorn.sock --workers 3 --timeout 120 --access-logfile /home/ubuntu/Ai_Project/logs/gunicorn-access.log --error-logfile /home/ubuntu/Ai_Project/logs/gunicorn-error.log[0m
+             └─[0;38;5;245m15474 /home/ubuntu/Ai_Project/venv/bin/python3 /home/ubuntu/Ai_Project/venv/bin/gunicorn n8n.wsgi:application --bind unix:/home/ubuntu/Ai_Project/gunicorn.sock --workers 3 --timeout 120 --access-logfile /home/ubuntu/Ai_Project/logs/gunicorn-access.log --error-logfile /home/ubuntu/Ai_Project/logs/gunicorn-error.log[0m
+
+Aug 18 15:10:00 srv963737 systemd[1]: Started gunicorn.service - gunicorn daemon.
