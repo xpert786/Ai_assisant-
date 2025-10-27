@@ -1290,8 +1290,19 @@ class AirtableClient:
                     'content': answer,
                     'id': entry.get('id')
                 }
+            
+            # Check for partial match - but be more strict
+            # Only allow partial matches if the shorter string is at least 80% of the longer string
+            shorter = min(query_lower, question.lower())
+            longer = max(query_lower, question.lower())
+            
+            if shorter in longer and len(shorter) >= len(longer) * 0.8:
+                return {
+                    'content': answer,
+                    'id': entry.get('id')
+                }
                 
-            # Word overlap scoring
+            # Word overlap scoring - only for substantial matches
             question_words = set(question.lower().split())
             common_words = query_words.intersection(question_words)
             
@@ -1299,8 +1310,8 @@ class AirtableClient:
             if len(query_words) > 0 and len(question_words) > 0:
                 overlap_score = len(common_words) / max(len(query_words), len(question_words))
                 
-                # Check for substantial keyword match
-                if overlap_score > best_score:
+                # Only consider matches with high overlap (80%+) and at least 2 common words
+                if overlap_score > best_score and overlap_score >= 0.8 and len(common_words) >= 2:
                     best_score = overlap_score
                     best_match = {
                         'content': answer,

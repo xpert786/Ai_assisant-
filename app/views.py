@@ -162,7 +162,22 @@ class MessageCreateView(CreateView):
             # Detect language and generate AI response
             detected_language = detect_language(message.content)
             logger.info(f"Detected language: {detected_language}")
-            response_data = ai_client.generate_response(message.content, recipient_name=client_name, detected_language=detected_language)
+            # Check if this is a simple conversational query that should skip knowledge base
+            simple_queries = [
+                "qué hora es", "what time is it", "che ore sono", "que horas são",
+                "hello", "hi", "hola", "ciao", "olá", "bonjour",
+                "how are you", "como estás", "come stai", "como você está",
+                "thank you", "gracias", "grazie", "obrigado", "merci"
+            ]
+            
+            is_simple_query = any(query in message.content.lower() for query in simple_queries)
+            
+            response_data = ai_client.generate_response(
+                message.content, 
+                is_followup=is_simple_query,  # Skip knowledge base for simple queries
+                recipient_name=client_name, 
+                detected_language=detected_language
+            )
             message.ai_response = response_data['content']
             message.from_knowledge_base = response_data['from_knowledge_base']
             message.knowledge_base_id = response_data['knowledge_base_id']
@@ -1812,21 +1827,58 @@ def real_time_chat(request):
         # Generate response with language context and conversation history
         conversation_history = data.get('conversation_history', [])
         
-        # Use the enhanced generate_structured_reply method for better context understanding
-        logger.info("Forcing use of generate_structured_reply method")
+        # Generate fresh AI response for real-time chat (bypass knowledge base entirely)
+        logger.info("Generating fresh AI response for real-time chat")
         try:
-            ai_response = ai_client.generate_structured_reply(message_content)
-            logger.info("Successfully used generate_structured_reply")
+            # Build conversation context
+            messages = []
+            
+            # Set appropriate system message based on detected language
+            language_instructions = {
+                'Italian': "Rispondi in italiano in modo naturale e conversazionale, come ChatGPT. Sii amichevole, utile e coinvolgente. Non usare firme formali o saluti come 'Cordiali saluti' o 'Ciao'. Rispondi semplicemente in modo naturale al messaggio dell'utente.",
+                'Spanish': "Responde en español de manera natural y conversacional, como ChatGPT. Sé amigable, útil y atractivo. No uses firmas formales o saludos como 'Saludos cordiales' o 'Hola'. Simplemente responde de manera natural al mensaje del usuario.",
+                'Portuguese': "Responda em português de forma natural e conversacional, como ChatGPT. Seja amigável, útil e envolvente. Não use assinaturas formais ou cumprimentos como 'Atenciosamente' ou 'Olá'. Simplesmente responda naturalmente à mensagem do usuário.",
+                'English': "You are a helpful AI assistant. Respond naturally and conversationally, like ChatGPT. Be friendly, helpful, and engaging. Don't use formal signatures or greetings like 'Best regards' or 'Hello'. Just respond naturally to the user's message."
+            }
+            
+            system_message = language_instructions.get(detected_language, language_instructions['English'])
+            messages.append({"role": "system", "content": system_message})
+            
+            # Add conversation history if provided
+            if conversation_history:
+                for msg in conversation_history:
+                    if msg.get('role') and msg.get('content'):
+                        messages.append({
+                            "role": msg['role'],
+                            "content": msg['content']
+                        })
+            
+            # Add current user message
+            messages.append({"role": "user", "content": message_content})
+            
+            # Generate response using OpenAI
+            if ai_client.using_v1:
+                response = ai_client.client.chat.completions.create(
+                    model=ai_client.text_model,
+                    messages=messages,
+                    temperature=0.7,
+                    max_tokens=800
+                )
+                ai_response = response.choices[0].message.content.strip()
+            else:
+                response = openai.ChatCompletion.create(
+                    model=ai_client.text_model,
+                    messages=messages,
+                    temperature=0.7,
+                    max_tokens=800
+                )
+                ai_response = response.choices[0].message.content.strip()
+            
+            logger.info("Successfully generated fresh AI response")
         except Exception as e:
-            logger.error(f"Error using generate_structured_reply: {e}")
-            # Fallback to generate_response with language detection
-            response_data = ai_client.generate_response(
-                message_content, 
-                is_followup=True, 
-                conversation_history=conversation_history,
-                detected_language=detected_language
-            )
-            ai_response = response_data['content']
+            logger.error(f"Error generating AI response: {e}")
+            # Fallback to a simple response
+            ai_response = f"I apologize, but I'm having trouble processing your request right now. Please try again later."
         
         # Create or update conversation
         if conversation_id:
