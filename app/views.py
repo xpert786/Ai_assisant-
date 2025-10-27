@@ -7,7 +7,7 @@ from django.contrib import messages as django_messages
 from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from django.urls import reverse_lazy
 from django.http import JsonResponse, HttpResponse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import csrf_exempt
 from django.http import Http404
 import re
@@ -28,7 +28,7 @@ from PIL import Image
 import easyocr
 import openai
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 # PDF generation imports
@@ -140,6 +140,116 @@ class MessageCreateView(CreateView):
         ai_client = AIClient()
         logger.info("AI client initialized successfully")
 
+        # SIMPLE DEBUG: Print everything to terminal
+        print("=" * 50)
+        print("FORM SUBMISSION DEBUG")
+        print("=" * 50)
+        print(f"All POST data: {dict(self.request.POST)}")
+        print(f"POST keys: {list(self.request.POST.keys())}")
+        print(f"POST values: {list(self.request.POST.values())}")
+        
+        # Handle custom company creation (should run for all messages)
+        custom_company_name = self.request.POST.get('custom_company_name', '').strip()
+        print(f"Custom company name: '{custom_company_name}'")
+        print(f"Custom company name type: {type(custom_company_name)}")
+        print(f"Custom company name length: {len(custom_company_name)}")
+        
+        custom_company_created = False  # Track if we created a new company
+        if custom_company_name:
+            print("*** CUSTOM COMPANY FOUND - CREATING RECORDS ***")
+        else:
+            print("*** NO CUSTOM COMPANY FOUND - SKIPPING CUSTOM COMPANY CREATION ***")
+        
+        if custom_company_name:
+            logger.info(f"Custom company provided: {custom_company_name}")
+            try:
+                # Create new company records in Airtable
+                print("Creating AirtableClient...")
+                airtable_client = AirtableClient()
+                print("AirtableClient created successfully")
+                
+                # Check if company already exists in Clients table
+                print("Checking if company already exists in Clients...")
+                existing_clients = airtable_client.get_table_records('Clients')
+                print(f"Found {len(existing_clients)} existing clients")
+                
+                client_exists = any(
+                    client.get('fields', {}).get('Full_Name', '').lower() == custom_company_name.lower()
+                    for client in existing_clients
+                )
+                print(f"Client exists: {client_exists}")
+                
+                # Check if company already exists in Accounts table
+                print("Checking if company already exists in Accounts...")
+                existing_account = airtable_client.search_accounts_by_name(custom_company_name)
+                account_exists = existing_account is not None
+                print(f"Account exists: {account_exists}")
+                
+                company_exists = client_exists or account_exists
+                print(f"Company exists (Client or Account): {company_exists}")
+                
+                if company_exists:
+                    print("*** COMPANY ALREADY EXISTS - SKIPPING CREATION ***")
+                    logger.info(f"Company '{custom_company_name}' already exists, skipping creation")
+                    # Still update the message with the company name
+                    message.client_name = custom_company_name
+                    # Extract client contact from form if available
+                    client_contact = self.request.POST.get('client_contact', '').strip()
+                    message.client_contact = client_contact or ''
+                else:
+                    print("*** CREATING NEW COMPANY RECORDS ***")
+                    custom_company_created = True  # Mark that we're creating a new company
+                    
+                    # Create Client record
+                    client_data = {
+                        'Full_Name': custom_company_name,
+                        'Contact': self.request.POST.get('client_contact', '').strip() or '',
+                        'Email': '',
+                        'Status': 'Active',
+                        'Notes': f'Created via AI Assistant on {timezone.now().strftime("%Y-%m-%d %H:%M:%S")}'
+                    }
+                    print(f"Creating client record with data: {client_data}")
+                    logger.info(f"Creating client record with data: {client_data}")
+                    client_record = airtable_client.create_record('Clients', client_data)
+                    print(f"Client record result: {client_record}")
+                    if client_record and not client_record.get('error'):
+                        print(f"SUCCESS: Created client record: {client_record.get('id')}")
+                        logger.info(f"SUCCESS: Created client record: {client_record.get('id')}")
+                    else:
+                        print(f"FAILED: Failed to create client record: {client_record}")
+                        logger.error(f"FAILED: Failed to create client record: {client_record}")
+                    
+                    # Create Account record only if it doesn't already exist
+                    if not account_exists:
+                        # Using only Company_Name field (the only field that exists in Accounts table)
+                        account_data = {
+                            'Company_Name': custom_company_name
+                        }
+                        print(f"Creating account record with data: {account_data}")
+                        logger.info(f"Creating account record with data: {account_data}")
+                        account_record = airtable_client.create_record('Accounts', account_data)
+                        print(f"Account record result: {account_record}")
+                        if account_record and not account_record.get('error'):
+                            print(f"SUCCESS: Created account record: {account_record.get('id')}")
+                            logger.info(f"SUCCESS: Created account record: {account_record.get('id')}")
+                        else:
+                            print(f"FAILED: Failed to create account record: {account_record}")
+                            logger.error(f"FAILED: Failed to create account record: {account_record}")
+                    else:
+                        print(f"SKIPPED: Account '{custom_company_name}' already exists in Accounts table")
+                        logger.info(f"SKIPPED: Account '{custom_company_name}' already exists in Accounts table")
+                    
+                    # Update message with custom company info
+                    message.client_name = custom_company_name
+                    message.client_contact = self.request.POST.get('client_contact', '').strip() or ''
+                    print(f"Updated message with custom company: {custom_company_name}")
+                    logger.info(f"Updated message with custom company: {custom_company_name}")
+                
+            except Exception as e:
+                print("ERROR: Error creating custom company records:", e)
+                logger.error(f"Error creating custom company records: {e}")
+                # Continue with normal processing even if custom company creation fails
+
         # Process message based on content or image
         if message.content:
             logger.info("Processing text message content")
@@ -158,6 +268,7 @@ class MessageCreateView(CreateView):
             if client_contact:
                 message.client_contact = client_contact
                 logger.info(f"Client contact set: {client_contact}")
+
 
             # Detect language and generate AI response
             detected_language = detect_language(message.content)
@@ -187,6 +298,25 @@ class MessageCreateView(CreateView):
             # Set final_response to ai_response initially
             message.final_response = message.ai_response
             logger.info("Final response set for text message")
+            
+            # Create Knowledge Base entry for custom company if applicable
+            if custom_company_name and custom_company_created:
+                try:
+                    airtable_client = AirtableClient()  # Initialize Airtable client
+                    knowledge_payload = {
+                        "Client_Message": message.content,
+                        "Final_Approved_Reply": message.ai_response
+                    }
+                    knowledge_record = airtable_client.save_to_knowledge_base(
+                        knowledge_payload["Client_Message"], 
+                        knowledge_payload
+                    )
+                    if knowledge_record and not knowledge_record.get('error'):
+                        logger.info(f"SUCCESS: Created knowledge base record: {knowledge_record.get('id')}")
+                    else:
+                        logger.error(f"FAILED: Failed to create knowledge base record: {knowledge_record}")
+                except Exception as e:
+                    logger.error(f"Error creating knowledge base entry for custom company: {e}")
             
         elif message.image:
             # Extract text from image
@@ -325,10 +455,49 @@ class MessageCreateView(CreateView):
                         client_contact = (message.client_contact or "").strip()
 
                         if client_name:
+                            print(f"\n{'='*60}")
+                            print(f"[IMAGE_AUTOSAVE] Processing Client and Account creation for: '{client_name}'")
+                            print(f"{'='*60}")
+                            
                             # Ensure Client exists
-                            existing_client = airtable_client.search_clients_by_name(client_name)
-                            if not existing_client:
-                                airtable_client.create_client_record(client_name, client_contact, raw_message)
+                            try:
+                                existing_client = airtable_client.search_clients_by_name(client_name)
+                                if not existing_client:
+                                    print(f"[CLIENT] Client '{client_name}' not found - creating new client record...")
+                                    client_result = airtable_client.create_client_record(client_name, client_contact, raw_message)
+                                    if client_result and isinstance(client_result, dict) and not client_result.get('error'):
+                                        print(f"[CLIENT] SUCCESS: Created client record with ID: {client_result.get('id')}")
+                                    else:
+                                        print(f"[CLIENT] FAILED: Failed to create client record. Result: {client_result}")
+                                else:
+                                    print(f"[CLIENT] Client '{client_name}' already exists, skipping creation")
+                            except Exception as e:
+                                print(f"[CLIENT] ERROR: Exception while creating client: {str(e)}")
+                                logger.error(f"Exception creating client during image autosave: {e}")
+                            
+                            # Ensure Account exists
+                            try:
+                                existing_account = airtable_client.search_accounts_by_name(client_name)
+                                if not existing_account:
+                                    print(f"[ACCOUNT] Account '{client_name}' not found - creating new account record...")
+                                    # Using only Company_Name field (the only field that exists in Accounts table)
+                                    account_data = {
+                                        'Company_Name': client_name
+                                    }
+                                    print(f"[ACCOUNT] Creating account with data: {account_data}")
+                                    account_result = airtable_client.create_record('Accounts', account_data)
+                                    if account_result and isinstance(account_result, dict) and not account_result.get('error'):
+                                        print(f"[ACCOUNT] SUCCESS: Created account record with ID: {account_result.get('id')}")
+                                    else:
+                                        print(f"[ACCOUNT] FAILED: Failed to create account record. Result: {account_result}")
+                                else:
+                                    print(f"[ACCOUNT] Account '{client_name}' already exists, skipping creation")
+                            except Exception as e:
+                                print(f"[ACCOUNT] ERROR: Exception while creating account: {str(e)}")
+                                logger.error(f"Exception creating account during image autosave: {e}")
+                            
+                            print(f"{'='*60}\n")
+                            
                             # Save to Knowledge Base
                             kb_result = airtable_client.save_to_knowledge_base(raw_message, message.final_response or message.ai_response)
                             if kb_result and isinstance(kb_result, dict) and not kb_result.get('error'):
@@ -375,6 +544,38 @@ class MessageCreateView(CreateView):
         message.save()
 
         logger.info(f"Message saved successfully with ID: {message.id}")
+
+        # Add success message for custom company creation
+        if custom_company_name:
+            from django.contrib import messages as django_messages
+            # Check if company was newly created or already existed
+            try:
+                airtable_client = AirtableClient()
+                existing_companies = airtable_client.get_table_records('Clients')
+                company_exists = any(
+                    company.get('fields', {}).get('Full_Name', '').lower() == custom_company_name.lower()
+                    for company in existing_companies
+                )
+                
+                if company_exists:
+                    django_messages.info(
+                        self.request, 
+                        f"[INFO] Company '{custom_company_name}' already exists in the database. "
+                        f"Message processed with existing company information."
+                    )
+                else:
+                    django_messages.success(
+                        self.request, 
+                        f"New company '{custom_company_name}' created successfully! "
+                        f"Records added to Clients, Accounts, and Knowledge Base tables."
+                    )
+            except Exception as e:
+                logger.error(f"Error checking company existence for message: {e}")
+                # Fallback message
+                django_messages.success(
+                    self.request, 
+                    f"Company '{custom_company_name}' processed successfully!"
+                )
 
         # Set the message ID in the session so we can display it
         self.request.session['new_message_id'] = message.id
@@ -594,10 +795,56 @@ def handle_client_action(request, pk):
                 lead_result = existing_lead
                 lead_saved = True
             else:
-                # 3) Also create a Client record if client_name exists
+                # 3) Also create a Client and Account record if client_name exists
                 if client_name:
-                    client_result = airtable_client.create_client_record(client_name, client_contact, raw_message)
-                    logger.info(f"Created client record: {client_result}")
+                    # Check if Client already exists
+                    print(f"\n{'='*60}")
+                    print(f"[SAVE_TO_AIRTABLE] Processing Client and Account creation for: '{client_name}'")
+                    print(f"{'='*60}")
+                    
+                    try:
+                        existing_client = airtable_client.search_clients_by_name(client_name)
+                        if not existing_client:
+                            print(f"[CLIENT] Client '{client_name}' not found - creating new client record...")
+                            client_result = airtable_client.create_client_record(client_name, client_contact, raw_message)
+                            if client_result and isinstance(client_result, dict) and not client_result.get('error'):
+                                print(f"[CLIENT] SUCCESS: Created client record with ID: {client_result.get('id')}")
+                                logger.info(f"Created client record: {client_result}")
+                            else:
+                                print(f"[CLIENT] FAILED: Failed to create client record. Result: {client_result}")
+                                logger.error(f"Failed to create client record: {client_result}")
+                        else:
+                            print(f"[CLIENT] Client '{client_name}' already exists (ID: {existing_client.get('id')}), skipping creation")
+                            logger.info(f"Client '{client_name}' already exists, skipping creation")
+                    except Exception as client_error:
+                        print(f"[CLIENT] ERROR: Exception while creating client record: {str(client_error)}")
+                        logger.error(f"Exception while creating client record: {client_error}")
+                    
+                    # Check if Account already exists
+                    try:
+                        existing_account = airtable_client.search_accounts_by_name(client_name)
+                        if not existing_account:
+                            print(f"[ACCOUNT] Account '{client_name}' not found - creating new account record...")
+                            # Using only Company_Name field (the only field that exists in Accounts table)
+                            account_data = {
+                                'Company_Name': client_name
+                            }
+                            print(f"[ACCOUNT] Attempting to create account with data: {account_data}")
+                            account_result = airtable_client.create_record('Accounts', account_data)
+                            if account_result and isinstance(account_result, dict) and not account_result.get('error'):
+                                print(f"[ACCOUNT] SUCCESS: Created account record with ID: {account_result.get('id')}")
+                                logger.info(f"Created account record: {account_result}")
+                            else:
+                                print(f"[ACCOUNT] FAILED: Failed to create account record. Result: {account_result}")
+                                logger.error(f"Failed to create account record: {account_result}")
+                        else:
+                            print(f"[ACCOUNT] Account '{client_name}' already exists (ID: {existing_account.get('id')}), skipping creation")
+                            logger.info(f"Account '{client_name}' already exists, skipping creation")
+                    except Exception as account_error:
+                        print(f"[ACCOUNT] ERROR: Exception while creating account record: {str(account_error)}")
+                        logger.error(f"Exception while creating account record: {account_error}")
+                    
+                    print(f"{'='*60}\n")
                     
                 try:
                     # CRITICAL: Ensure we have a valid response_content to save
@@ -651,12 +898,49 @@ def handle_client_action(request, pk):
             })
         
         elif action == 'create_new_client':
-            # Create new client and lead
+            # Create new client, account, and lead
             client_name = data.get('name', message.client_name or 'Unknown')
             client_contact = data.get('contact', message.client_contact or '')
             
+            print(f"\n{'='*60}")
+            print(f"[CREATE_NEW_CLIENT] Processing Client and Account creation for: '{client_name}'")
+            print(f"{'='*60}")
+            
             # Create client record
-            client_result = airtable_client.create_client_record(client_name, client_contact, raw_message)
+            try:
+                print(f"[CLIENT] Creating client record...")
+                client_result = airtable_client.create_client_record(client_name, client_contact, raw_message)
+                if client_result and isinstance(client_result, dict) and not client_result.get('error'):
+                    print(f"[CLIENT] SUCCESS: Created client record with ID: {client_result.get('id')}")
+                else:
+                    print(f"[CLIENT] FAILED: Failed to create client record. Result: {client_result}")
+            except Exception as e:
+                print(f"[CLIENT] ERROR: Exception while creating client: {str(e)}")
+                logger.error(f"Exception creating client in create_new_client: {e}")
+                client_result = None
+            
+            # Create account record
+            try:
+                existing_account = airtable_client.search_accounts_by_name(client_name)
+                if not existing_account:
+                    print(f"[ACCOUNT] Creating account record...")
+                    # Using only Company_Name field (the only field that exists in Accounts table)
+                    account_data = {
+                        'Company_Name': client_name
+                    }
+                    print(f"[ACCOUNT] Creating account with data: {account_data}")
+                    account_result = airtable_client.create_record('Accounts', account_data)
+                    if account_result and isinstance(account_result, dict) and not account_result.get('error'):
+                        print(f"[ACCOUNT] SUCCESS: Created account record with ID: {account_result.get('id')}")
+                    else:
+                        print(f"[ACCOUNT] FAILED: Failed to create account record. Result: {account_result}")
+                else:
+                    print(f"[ACCOUNT] Account already exists, skipping creation")
+            except Exception as e:
+                print(f"[ACCOUNT] ERROR: Exception while creating account: {str(e)}")
+                logger.error(f"Exception creating account in create_new_client: {e}")
+            
+            print(f"{'='*60}\n")
             
             # Create lead record
             lead_result = airtable_client.create_lead_record(client_name, client_contact, raw_message)
@@ -789,6 +1073,76 @@ def search_clients(request):
     except Exception as e:
         logger.error(f"search_clients error: {e}")
         return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+
+@require_GET
+def get_companies(request):
+    """Get companies from Airtable for Select2 dropdown"""
+    try:
+        search = request.GET.get('search', '').strip()
+        page = int(request.GET.get('page', 1))
+        per_page = 20
+        
+        airtable_client = AirtableClient()
+        
+        # Get companies from both Clients and Accounts tables
+        companies = []
+        
+        # Get from Clients table
+        clients = airtable_client.get_table_records('Clients')
+        if clients:
+            for client in clients:
+                fields = client.get('fields', {})
+                name = fields.get('Name', '')
+                if name:
+                    companies.append({
+                        'id': f"client_{client.get('id')}",
+                        'name': name,
+                        'type': 'Client',
+                        'contact': fields.get('Contact', ''),
+                        'email': fields.get('Email', '')
+                    })
+        
+        # Get from Accounts table
+        accounts = airtable_client.get_table_records('Accounts')
+        if accounts:
+            for account in accounts:
+                fields = account.get('fields', {})
+                name = fields.get('Company_Name', '')
+                if name:
+                    companies.append({
+                        'id': f"account_{account.get('id')}",
+                        'name': name,
+                        'type': 'Account',
+                        'contact': fields.get('Contact_Person', ''),
+                        'email': fields.get('Email', '')
+                    })
+        
+        # Filter by search term if provided
+        if search:
+            search_lower = search.lower()
+            companies = [c for c in companies if search_lower in c['name'].lower()]
+        
+        # Sort by name
+        companies.sort(key=lambda x: x['name'])
+        
+        # Pagination
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_companies = companies[start:end]
+        
+        return JsonResponse({
+            'results': paginated_companies,
+            'has_more': end < len(companies),
+            'total_count': len(companies)
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting companies: {e}")
+        return JsonResponse({
+            'success': False,
+            'message': str(e)
+        })
 
 # Create Lead in Airtable
 @require_POST
@@ -1680,7 +2034,7 @@ import json
 import time
 from django.http import StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 
 @csrf_exempt
 @require_POST

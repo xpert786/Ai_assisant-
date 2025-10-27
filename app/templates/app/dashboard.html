@@ -12,73 +12,7 @@
     <!-- Search Section -->
     <div class="row justify-content-center mb-4">
         <div class="col-12 col-lg-10">
-            <div class="card border-0 shadow-sm fade-in search-card">
-                <div class="card-body p-4">
-                    <h5 class="card-title mb-3">
-                        <i class="bi bi-search me-2 text-accent"></i>Client & Account Search
-                    </h5>
-                    <p class="text-muted mb-3">Search for existing clients, accounts, or leads by name, company, email, or phone number</p>
-
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control form-control-lg" id="searchInput"
-                               placeholder="Enter name, company, email, or phone number..."
-                               aria-label="Search clients and accounts">
-                        <button class="btn btn-primary" type="button" id="searchBtn">
-                            <i class="bi bi-search me-1"></i>Search
-                        </button>
-                    </div>
-
-                    <!-- Search Results -->
-                    <div id="searchResults" class="search-results d-none">
-                        <div class="row">
-                            <!-- Clients Results -->
-                            <div class="col-md-4">
-                                <div class="results-section">
-                                    <h6 class="results-title">
-                                        <i class="bi bi-person me-1"></i>Clients
-                                        <span class="badge bg-primary ms-1" id="clientsCount">0</span>
-                                    </h6>
-                                    <div class="results-list" id="clientsList">
-                                        <!-- Client results will be inserted here -->
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Accounts Results -->
-                            <div class="col-md-4">
-                                <div class="results-section">
-                                    <h6 class="results-title">
-                                        <i class="bi bi-building me-1"></i>Accounts
-                                        <span class="badge bg-success ms-1" id="accountsCount">0</span>
-                                    </h6>
-                                    <div class="results-list" id="accountsList">
-                                        <!-- Account results will be inserted here -->
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Leads Results -->
-                            <div class="col-md-4">
-                                <div class="results-section">
-                                    <h6 class="results-title">
-                                        <i class="bi bi-person-plus me-1"></i>Leads
-                                        <span class="badge bg-warning ms-1" id="leadsCount">0</span>
-                                    </h6>
-                                    <div class="results-list" id="leadsList">
-                                        <!-- Lead results will be inserted here -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center mt-3">
-                            <button class="btn btn-outline-secondary btn-sm" id="clearSearchBtn">
-                                <i class="bi bi-x-circle me-1"></i>Clear Results
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
 
@@ -183,12 +117,90 @@
                             </div>
                         </div>
                         
+                        <!-- Company Name Selection -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="company-selection-container">
+                                    <label for="companySelect" class="form-label fs-5 mb-3">
+                                        <i class="bi bi-building me-2 text-accent"></i>Select Company <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="companySelect" name="company_id" class="form-select form-select-lg" required>
+                                        <option value="">Search and select a company...</option>
+                                    </select>
+                                    <div class="mt-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="customCompanyCheck">
+                                            <label class="form-check-label" for="customCompanyCheck">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-plus-circle me-1"></i>Company not found? Enter custom company name
+                                                </small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div id="customCompanyInput" class="mt-3 d-none">
+                                        <div class="alert alert-info border-0 mb-2">
+                                            <i class="bi bi-info-circle me-2"></i>
+                                            <small>Custom company will be created in Clients, Accounts, and Knowledge Base tables</small>
+                                        </div>
+                                        <input type="text" id="customCompanyName" name="custom_company_name" class="form-control form-control-lg" placeholder="Enter company name...">
+                                        <small class="text-muted d-block mt-1">Enter the company name if it's not in the list above</small>
+                                    </div>
+                                    <small class="text-muted d-block mt-2">Select the company this message is related to</small>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="d-grid mt-4">
                             <button type="submit" class="btn btn-primary btn-lg generate-btn">
                                 <i class="bi bi-lightning-charge me-2"></i> Generate AI Response
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+            
+            <!-- Company Modification Confirmation Dialog -->
+            <div id="companyModificationDialog" class="dialog d-none">
+                <div class="dialog-content">
+                    <div class="dialog-header">
+                        <h5 class="dialog-title">
+                            <i class="bi bi-building me-2"></i>Modify Company Details?
+                        </h5>
+                        <button type="button" class="btn-close" id="closeCompanyDialog"></button>
+                    </div>
+                    <div class="dialog-body">
+                        <div class="alert alert-info border-0 mb-3">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Company Selected:</strong> <span id="selectedCompanyName"></span>
+                        </div>
+                        <p class="mb-3">You have selected a company from the database. Would you like to:</p>
+                        <ul class="list-unstyled mb-3">
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                <strong>Save this message to the Knowledge Base</strong>
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                <strong>Update the Client record</strong>
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                <strong>Update the Account record</strong>
+                            </li>
+                        </ul>
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            This will modify the existing company data in your database.
+                        </p>
+                    </div>
+                    <div class="dialog-footer">
+                        <button type="button" class="btn btn-outline-secondary" id="cancelCompanyModification">
+                            <i class="bi bi-x-circle me-2"></i>Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" id="confirmCompanyModification">
+                            <i class="bi bi-check-circle me-2"></i>Yes, Modify Company Details
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -468,6 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('messageForm');
     const contentInput = document.getElementById('{{ form.content.id_for_label }}');
     const imageInput = document.getElementById('{{ form.image.id_for_label }}');
+    
     const uploadArea = document.getElementById('uploadArea');
     const imagePreview = document.getElementById('imagePreview');
     const previewImg = imagePreview.querySelector('img');
@@ -493,11 +506,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Show loading indicator when submitting form with image
     form.addEventListener('submit', function(e) {
-        if (imageInput.files.length > 0) {
-            const submitButton = form.querySelector('button[type="submit"]');
-            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...';
-            submitButton.disabled = true;
-        }   
+        // This listener is now handled by the main form validation below
+        // Keeping this for backward compatibility but it won't prevent submission
     });
     
     // Toast notification functions
@@ -708,7 +718,427 @@ document.addEventListener('DOMContentLoaded', function() {
         searchResults.classList.add('d-none');
         searchInput.value = '';
     }
+    
+    // Check for existing clients and accounts before generating AI response
+    function checkClientAndAccount(messageContent, selectedCompany) {
+        console.log('Checking for clients and accounts in message:', messageContent);
+        console.log('Selected company:', selectedCompany);
+        
+        // Extract potential client/company names from the message
+        const extractedNames = extractNamesFromMessage(messageContent);
+        console.log('Extracted names:', extractedNames);
+        
+        // Add the selected company to the list of names to check
+        if (selectedCompany && !extractedNames.includes(selectedCompany)) {
+            extractedNames.unshift(selectedCompany); // Add to beginning for priority
+        }
+        
+        if (extractedNames.length === 0) {
+            // No names found, proceed directly to AI generation
+            generateAIResponse();
+            return;
+        }
+        
+        // Check each extracted name against clients and accounts
+        checkNamesAgainstDatabase(extractedNames, 0);
+    }
+    
+    // Extract potential client/company names from message
+    function extractNamesFromMessage(message) {
+        const names = [];
+        
+        // Simple regex patterns to extract potential names
+        // Look for capitalized words that might be names
+        const namePatterns = [
+            /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/g, // First Last names
+            /([A-Z][A-Za-z0-9\s&\-\.]+(?:LLC|Ltd|Corporation|Corp|Inc|Limited|Trading|Solutions|Group|Company))/g, // Company names
+            /@([A-Za-z0-9_]+)/g, // @mentions
+            /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/g // General capitalized words
+        ];
+        
+        namePatterns.forEach(pattern => {
+            let match;
+            while ((match = pattern.exec(message)) !== null) {
+                const name = match[1] || match[0];
+                if (name && name.length > 2 && !names.includes(name)) {
+                    names.push(name);
+                }
+            }
+        });
+        
+        return names;
+    }
+    
+    // Check names against database (clients and accounts)
+    function checkNamesAgainstDatabase(names, index) {
+        if (index >= names.length) {
+            // All names checked, proceed to AI generation
+            generateAIResponse();
+            return;
+        }
+        
+        const currentName = names[index];
+        console.log(`Checking name ${index + 1}/${names.length}: ${currentName}`);
+        
+        // Check against clients and accounts
+        fetch('/ai/api/search-clients/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                query: currentName
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log(`Search results for "${currentName}":`, data.results);
+                
+                // Check if we found any matches
+                const hasMatches = (data.results.clients && data.results.clients.length > 0) || 
+                                 (data.results.accounts && data.results.accounts.length > 0) ||
+                                 (data.results.leads && data.results.leads.length > 0);
+                
+                if (hasMatches) {
+                    console.log(`Found existing records for "${currentName}"`);
+                    // TODO: Handle existing client/account found
+                    // For now, just log and continue
+                } else {
+                    console.log(`No existing records found for "${currentName}"`);
+                    // TODO: Handle new client/account
+                    // For now, just log and continue
+                }
+            } else {
+                console.error('Error searching for clients/accounts:', data.message);
+            }
+            
+            // Check next name
+            checkNamesAgainstDatabase(names, index + 1);
+        })
+        .catch(error => {
+            console.error('Error checking name:', error);
+            // Continue with next name even if this one failed
+            checkNamesAgainstDatabase(names, index + 1);
+        });
+    }
+    
+    // Generate AI response after checking clients/accounts
+    function generateAIResponse() {
+        console.log('Proceeding to generate AI response');
+        
+        // Update button text
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Generating...';
+        
+        // Submit the form normally
+        form.submit();
+    }
+    
+    // Show company modification confirmation dialog
+    function showCompanyModificationDialog(companyName) {
+        console.log('showCompanyModificationDialog called with:', companyName);
+        
+        // Use a more reliable method to find elements
+        const dialog = document.querySelector('#companyModificationDialog');
+        const companyNameSpan = document.querySelector('#selectedCompanyName');
+        
+        console.log('Dialog element found:', !!dialog);
+        console.log('Company name span found:', !!companyNameSpan);
+        
+        // Check if elements exist before using them
+        if (!dialog) {
+            console.error('Company modification dialog not found - using fallback');
+            // Fallback: use browser confirm dialog
+            const confirmed = confirm(`You have selected "${companyName}" from the database.\n\nThis will modify the existing company data in your database.\n\nDo you want to proceed with modifying the company details?`);
+            if (confirmed) {
+                proceedWithSubmission(contentInput.value.trim(), companyName);
+            } else {
+                // Reset form button state
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="bi bi-lightning-charge me-2"></i> Generate AI Response';
+                submitBtn.disabled = false;
+            }
+            return;
+        }
+        
+        if (!companyNameSpan) {
+            console.error('Selected company name span not found - using fallback');
+            // Fallback: use browser confirm dialog
+            const confirmed = confirm(`You have selected "${companyName}" from the database.\n\nThis will modify the existing company data in your database.\n\nDo you want to proceed with modifying the company details?`);
+            if (confirmed) {
+                proceedWithSubmission(contentInput.value.trim(), companyName);
+            } else {
+                // Reset form button state
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="bi bi-lightning-charge me-2"></i> Generate AI Response';
+                submitBtn.disabled = false;
+            }
+            return;
+        }
+        
+        // Set the company name in the dialog
+        companyNameSpan.textContent = companyName;
+        console.log('Set company name in dialog:', companyName);
+        
+        // Show the dialog
+        dialog.classList.remove('d-none');
+        document.body.classList.add('dialog-open');
+        console.log('Dialog should now be visible');
+        
+        // Store the current form data for later use
+        window.pendingFormData = {
+            message: contentInput.value.trim(),
+            company: companyName
+        };
+    }
+    
+    // Hide company modification dialog
+    function hideCompanyModificationDialog() {
+        const dialog = document.getElementById('companyModificationDialog');
+        
+        if (!dialog) {
+            console.error('Company modification dialog not found');
+            return;
+        }
+        
+        dialog.classList.add('d-none');
+        document.body.classList.remove('dialog-open');
+        
+        // Clear pending form data
+        window.pendingFormData = null;
+    }
+    
+    // Proceed with form submission
+    function proceedWithSubmission(messageContent, selectedCompany) {
+        // Add loading state to button
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Checking...';
+        submitBtn.disabled = true;
+        
+        // First check for clients/accounts, then generate AI response
+        checkClientAndAccount(messageContent, selectedCompany);
+    }
+    
+    // Initialize Select2 for company selection
+    function initializeCompanySelect() {
+        $('#companySelect').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Search and select a company...',
+            allowClear: true,
+            width: '100%',
+            ajax: {
+                url: '/ai/api/companies/',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        search: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.results.map(function(company) {
+                            return {
+                                id: company.id,
+                                text: company.name,
+                                data: company
+                            };
+                        }),
+                        pagination: {
+                            more: data.has_more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            language: {
+                inputTooShort: function () {
+                    return 'Please enter at least 2 characters to search';
+                },
+                noResults: function () {
+                    return 'No companies found';
+                },
+                searching: function () {
+                    return 'Searching...';
+                }
+            }
+        });
+    }
 
+    // Initialize company select on page load
+    $(document).ready(function() {
+        initializeCompanySelect();
+        initializeCustomCompanyToggle();
+        initializeCompanyDialog();
+        
+        // Check if dialog elements exist
+        const dialog = document.querySelector('#companyModificationDialog');
+        const companyNameSpan = document.querySelector('#selectedCompanyName');
+        console.log('Dialog initialization check:');
+        console.log('Dialog element found:', !!dialog);
+        console.log('Company name span found:', !!companyNameSpan);
+        
+        // Form validation and client/account checking
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Always prevent default submission first
+                
+                // Check if message or image is provided
+                if (!contentInput.value.trim() && !imageInput.files.length) {
+                    // Add shake animation to form
+                    form.classList.add('shake');
+                    setTimeout(() => form.classList.remove('shake'), 500);
+                    
+                    // Show error toast
+                    showErrorToast('Please enter a message OR upload a screenshot (or both)');
+                    return;
+                }
+                
+                // Check if company is selected or custom company is entered
+                const companySelect = document.getElementById('companySelect');
+                const customCompanyCheck = document.getElementById('customCompanyCheck');
+                const customCompanyName = document.getElementById('customCompanyName');
+                
+                let hasValidCompany = false;
+                let selectedCompany = '';
+                
+                if (customCompanyCheck.checked && customCompanyName.value.trim()) {
+                    // Custom company is selected and has a value
+                    hasValidCompany = true;
+                    selectedCompany = customCompanyName.value.trim();
+                } else if (!customCompanyCheck.checked && companySelect.value) {
+                    // Regular company is selected
+                    hasValidCompany = true;
+                    selectedCompany = companySelect.options[companySelect.selectedIndex].text;
+                }
+                
+                if (!hasValidCompany) {
+                    // Add shake animation to form
+                    form.classList.add('shake');
+                    setTimeout(() => form.classList.remove('shake'), 500);
+                    
+                    // Show error toast
+                    if (customCompanyCheck.checked) {
+                        showErrorToast('Please enter a custom company name');
+                    } else {
+                        showErrorToast('Please select a company or enter a custom company name');
+                    }
+                    return;
+                }
+                
+                // Check if company was selected from dropdown (not custom)
+                if (!customCompanyCheck.checked && companySelect.value) {
+                    // Add a small delay to ensure DOM is fully loaded
+                    setTimeout(() => {
+                        showCompanyModificationDialog(selectedCompany);
+                    }, 100);
+                } else if (customCompanyCheck.checked && customCompanyName.value.trim()) {
+                    // Custom company selected, submit form directly
+                    console.log('Submitting form with custom company:', selectedCompany);
+                    console.log('Custom company name field value:', customCompanyName.value);
+                    console.log('Form data before submission:', new FormData(form));
+                    
+                    // Debug: Check if the field is enabled and has a value
+                    console.log('Custom company field enabled:', !customCompanyName.disabled);
+                    console.log('Custom company field required:', customCompanyName.required);
+                    console.log('Custom company field name:', customCompanyName.name);
+                    
+                    generateAIResponse();
+                } else {
+                    // No company selected, proceed with normal flow
+                    proceedWithSubmission(contentInput.value.trim(), selectedCompany);
+                }
+            });
+        }
+    });
+    
+    // Handle custom company checkbox toggle
+    function initializeCustomCompanyToggle() {
+        const customCompanyCheck = document.getElementById('customCompanyCheck');
+        const customCompanyInput = document.getElementById('customCompanyInput');
+        const companySelect = document.getElementById('companySelect');
+        const customCompanyName = document.getElementById('customCompanyName');
+        
+        if (customCompanyCheck) {
+            customCompanyCheck.addEventListener('change', function() {
+                if (this.checked) {
+                    // Show custom input and disable select
+                    customCompanyInput.classList.remove('d-none');
+                    companySelect.disabled = true;
+                    companySelect.required = false;
+                    customCompanyName.required = true;
+                    customCompanyName.focus();
+                } else {
+                    // Hide custom input and enable select
+                    customCompanyInput.classList.add('d-none');
+                    companySelect.disabled = false;
+                    companySelect.required = true;
+                    customCompanyName.required = false;
+                    customCompanyName.value = '';
+                }
+            });
+        }
+    }
+    
+    // Initialize company modification dialog
+    function initializeCompanyDialog() {
+        const dialog = document.getElementById('companyModificationDialog');
+        const closeBtn = document.getElementById('closeCompanyDialog');
+        const cancelBtn = document.getElementById('cancelCompanyModification');
+        const confirmBtn = document.getElementById('confirmCompanyModification');
+        
+        // Close dialog handlers
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                hideCompanyModificationDialog();
+                // Reset form button state
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="bi bi-lightning-charge me-2"></i> Generate AI Response';
+                submitBtn.disabled = false;
+            });
+        }
+        
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function() {
+                hideCompanyModificationDialog();
+                // Reset form button state
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="bi bi-lightning-charge me-2"></i> Generate AI Response';
+                submitBtn.disabled = false;
+            });
+        }
+        
+        // Confirm modification handler
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', function() {
+                hideCompanyModificationDialog();
+                
+                // Proceed with form submission using stored data
+                if (window.pendingFormData) {
+                    proceedWithSubmission(window.pendingFormData.message, window.pendingFormData.company);
+                }
+            });
+        }
+        
+        // Close dialog when clicking outside
+        if (dialog) {
+            dialog.addEventListener('click', function(e) {
+                if (e.target === dialog) {
+                    hideCompanyModificationDialog();
+                    // Reset form button state
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.innerHTML = '<i class="bi bi-lightning-charge me-2"></i> Generate AI Response';
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+    }
+    
     // Event listeners
     if (searchBtn) {
         searchBtn.addEventListener('click', performSearch);
@@ -729,26 +1159,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Form validation
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            if (!contentInput.value.trim() && !imageInput.files.length) {
-                e.preventDefault();
-                
-                // Add shake animation to form
-                form.classList.add('shake');
-                setTimeout(() => form.classList.remove('shake'), 500);
-                
-                // Show error toast
-                showErrorToast('Please enter a message OR upload a screenshot (or both)');
-            } else {
-                // Add loading state to button
-                const submitBtn = form.querySelector('button[type="submit"]');
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Generating...';
-                submitBtn.disabled = true;
-            }
-        });
-    }
     
     // Upload area enhancements
     if (uploadArea && imageInput) {
@@ -1560,5 +1970,108 @@ mark {
     padding: 2rem;
     color: #6c757d;
 }
+
+/* Company Modification Dialog Styling */
+#companyModificationDialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+#companyModificationDialog .dialog-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+#companyModificationDialog .dialog-header {
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#companyModificationDialog .dialog-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+#companyModificationDialog .btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#companyModificationDialog .btn-close:hover {
+    color: #212529;
+}
+
+#companyModificationDialog .dialog-body {
+    padding: 1.5rem;
+}
+
+#companyModificationDialog .dialog-footer {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+#companyModificationDialog .btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+#companyModificationDialog .btn-outline-secondary {
+    border: 1px solid #6c757d;
+    color: #6c757d;
+}
+
+#companyModificationDialog .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+}
+
+#companyModificationDialog .btn-primary {
+    background-color: #4361ee;
+    border: 1px solid #4361ee;
+    color: white;
+}
+
+#companyModificationDialog .btn-primary:hover {
+    background-color: #3a0ca3;
+    border-color: #3a0ca3;
+}
+
+/* Dialog open state */
+body.dialog-open {
+    overflow: hidden;
+}
 </style>
+
 {% endblock %} 

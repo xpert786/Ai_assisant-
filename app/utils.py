@@ -1200,14 +1200,14 @@ class AirtableClient:
         # Check for duplicate entries before saving
         existing_entry = self.check_duplicate_knowledge_base(client_message, fields.get("Final_Approved_Reply", ""))
         if existing_entry:
-            logger.info(f"🔍 Duplicate Knowledge Base entry found: {existing_entry.get('id')}")
+            logger.info(f"[DUPLICATE] Knowledge Base entry found: {existing_entry.get('id')}")
             return {
                 'id': existing_entry.get('id'),
                 'duplicate': True,
                 'message': 'This response already exists in Knowledge Base'
             }
         
-        logger.info(f"🔍 Final fields going to create_record: {fields}")
+        logger.info(f"[KB] Final fields going to create_record: {fields}")
         return self.create_record("Knowledge_Base", fields)
 
     def check_duplicate_knowledge_base(self, client_message, final_response):
@@ -1366,28 +1366,46 @@ class AirtableClient:
         url = f"{self.base_url}/{table_name}"
 
         # Debug log to check what is going
-        logger.info(f"📌 create_record: table={table_name}, type={type(fields)}, fields={fields}")
+        logger.info(f"[CREATE] create_record: table={table_name}, type={type(fields)}, fields={fields}")
+        print(f"[CREATE] Creating record in table '{table_name}' with fields: {fields}")
 
         # Always enforce dict
         if not isinstance(fields, dict):
-            raise TypeError(f"Expected dict for fields, got {type(fields)}")
+            error_msg = f"Expected dict for fields, got {type(fields)}"
+            print(f"[CREATE] ERROR: {error_msg}")
+            raise TypeError(error_msg)
 
         # Sanitize fields for Airtable constraints (e.g., valid select options)
-        safe_fields = self._sanitize_fields_for_airtable(fields)
-        payload = {"fields": safe_fields}
+        try:
+            safe_fields = self._sanitize_fields_for_airtable(fields)
+            print(f"[CREATE] Sanitized fields: {safe_fields}")
+            payload = {"fields": safe_fields}
+        except Exception as e:
+            print(f"[CREATE] ERROR: Failed to sanitize fields: {str(e)}")
+            logger.error(f"[CREATE] Failed to sanitize fields: {e}")
+            return {'error': True, 'message': f'Failed to sanitize fields: {str(e)}'}
 
         # ✅ Use json= instead of data=
-        resp = requests.post(url, headers=self.headers, json=payload)
+        try:
+            print(f"[CREATE] Sending POST request to {url}...")
+            resp = requests.post(url, headers=self.headers, json=payload)
+            print(f"[CREATE] Response status code: {resp.status_code}")
+        except Exception as e:
+            print(f"[CREATE] ERROR: Request failed: {str(e)}")
+            logger.error(f"[CREATE] Request failed: {e}")
+            return {'error': True, 'message': f'Request failed: {str(e)}'}
 
         if resp.status_code >= 400:
-            logger.error(f"Airtable error {resp.status_code}: {resp.text}")
+            logger.error(f"[CREATE] Airtable error {resp.status_code}: {resp.text}")
+            print(f"[CREATE] ERROR: HTTP {resp.status_code} - {resp.text[:200]}")
             
             # Handle specific error cases
             if resp.status_code == 429:
                 error_data = resp.json()
                 if 'errors' in error_data and len(error_data['errors']) > 0:
                     error_msg = error_data['errors'][0].get('message', 'API billing limit exceeded')
-                    logger.error(f"Airtable API billing limit exceeded: {error_msg}")
+                    logger.error(f"[CREATE] Airtable API billing limit exceeded: {error_msg}")
+                    print(f"[CREATE] ERROR: API billing limit exceeded")
                     # Return a structured error response
                     return {
                         'error': True,
@@ -1396,15 +1414,26 @@ class AirtableClient:
                         'details': error_msg
                     }
             elif resp.status_code == 422:
-                logger.error(f"Airtable validation error: {resp.text}")
+                logger.error(f"[CREATE] Airtable validation error: {resp.text}")
+                print(f"[CREATE] ERROR: Validation error - check field names and values")
                 return {
                     'error': True,
                     'status_code': 422,
                     'message': 'Airtable validation error. Please check your data.',
                     'details': resp.text
                 }
-
-        return resp.json()
+            else:
+                print(f"[CREATE] ERROR: Unhandled HTTP error {resp.status_code}")
+        
+        try:
+            result = resp.json()
+            if resp.status_code in [200, 201]:
+                print(f"[CREATE] SUCCESS: Record created with ID: {result.get('id', 'unknown')}")
+            return result
+        except Exception as e:
+            logger.error(f"[CREATE] Failed to parse JSON response: {e}")
+            print(f"[CREATE] ERROR: Failed to parse JSON response: {str(e)}")
+            return {'error': True, 'message': f'Failed to parse response: {str(e)}'}
 
 
 
@@ -1795,35 +1824,46 @@ class AirtableClient:
         return None
 
     def search_clients_by_name(self, name):
-        """Search Clients table by name"""
+        """Search Clients table by name (case-insensitive)"""
         if not name:
             return None
         
-        name_filter = f"{{Full_Name}} = '{name.strip()}'"
-        clients = self.get_table_records('Clients', name_filter)
-        if clients:
-            return clients[0]
+        # Get all clients and do case-insensitive comparison
+        clients = self.get_table_records('Clients')
+        name_lower = name.strip().lower()
+        
+        for client in clients:
+            client_name = client.get('fields', {}).get('Full_Name', '')
+            if client_name and client_name.lower() == name_lower:
+                return client
         
         return None
 
     def search_accounts_by_name(self, company_name):
-        """Search Accounts table by company name"""
+        """Search Accounts table by company name (case-insensitive)"""
         if not company_name:
             return None
         
-        company_filter = f"{{Company_Name}} = '{company_name.strip()}'"
-        accounts = self.get_table_records('Accounts', company_filter)
-        if accounts:
-            return accounts[0]
+        # Get all accounts and do case-insensitive comparison
+        accounts = self.get_table_records('Accounts')
+        company_name_lower = company_name.strip().lower()
+        
+        for account in accounts:
+            account_name = account.get('fields', {}).get('Company_Name', '')
+            if account_name and account_name.lower() == company_name_lower:
+                return account
         
         return None
 
     def create_client_record(self, name, contact, message):
         """Create a new client record in Clients table"""
         if not name or name.lower() in ['unknown', 'n/a', 'na', 'none']:
-            logger.warning(f"Not creating client record - invalid name: {name}")
+            logger.warning(f"[CLIENT] Not creating client record - invalid name: {name}")
+            print(f"[CLIENT] Skipping creation - invalid name: '{name}'")
             return None
-            
+        
+        print(f"[CLIENT] create_client_record called for: '{name}'")
+        
         # Ensure name is properly formatted
         fields = {
             'Full_Name': name.strip(),
@@ -1839,16 +1879,27 @@ class AirtableClient:
         if message:
             fields['Notes'] = message[:500]  # Limit notes length
         
+        print(f"[CLIENT] Fields to create: {fields}")
+        
         # Try to create record, log any failures
         try:
             result = self.create_record('Clients', fields)
             if not result or (isinstance(result, dict) and result.get('error')):
-                logger.error(f"Failed to create client record: {result}")
+                logger.error(f"[CLIENT] Failed to create client record: {result}")
+                print(f"[CLIENT] First attempt failed: {result}")
                 # Try with fallback field names
+                print(f"[CLIENT] Attempting fallback with alternate field names...")
                 result = self.create_record_with_fallback('Clients', fields)
+                if result and not (isinstance(result, dict) and result.get('error')):
+                    print(f"[CLIENT] Fallback succeeded: {result.get('id') if isinstance(result, dict) else 'unknown'}")
+                else:
+                    print(f"[CLIENT] Fallback also failed: {result}")
+            else:
+                print(f"[CLIENT] Successfully created client record: {result.get('id') if isinstance(result, dict) else 'unknown'}")
             return result
         except Exception as e:
-            logger.error(f"Exception creating client record: {str(e)}")
+            logger.error(f"[CLIENT] Exception creating client record: {str(e)}")
+            print(f"[CLIENT] EXCEPTION: {str(e)}")
             return None
 
     def detect_source_from_content(self, content):
@@ -2021,3 +2072,6 @@ def generate_image_hash(image_file):
         for chunk in image_file.chunks():
             hasher.update(chunk)
         return hasher.hexdigest()
+
+
+

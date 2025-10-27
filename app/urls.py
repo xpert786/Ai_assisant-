@@ -12,6 +12,7 @@ urlpatterns = [
     # Client workflow endpoints
     path('messages/<int:pk>/handle-client-action/', views.handle_client_action, name='handle_client_action'),
     path('api/search-clients/', views.search_clients, name='search_clients'),
+    path('api/companies/', views.get_companies, name='get_companies'),
     path('messages/<int:message_id>/save-to-airtable-accounts/', views.save_to_airtable_accounts, name='save_to_airtable_accounts'),
     path('messages/<int:pk>/save-to-kb/', views.save_to_knowledge_base, name='save_to_kb'),
     
